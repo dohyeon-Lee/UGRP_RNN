@@ -22,7 +22,7 @@ print(f'{device} is available')
 
 ## parameters, dataset
 
-train_datasize = 1
+train_datasize = 30
 test_datasize = 1
 database = data_loader(train_datasize=train_datasize, test_datasize=test_datasize, device=device)
 
@@ -37,9 +37,12 @@ model = VanillaRNN(input_size=input_size,
                    device=device).to(device)
 criterion = nn.MSELoss()
 
+# PATH = "model/train_direct_dict_sl32.pt"
+# model.load_state_dict(torch.load(PATH))
+
 ## training
 lr = 1e-3
-num_epochs = 500
+num_epochs = 1000
 optimizer = optim.Adam(model.parameters(), lr=lr)
 loss_graph = [] # 그래프 그릴 목적인 loss.
 n = len(database.train_loader[0])
@@ -59,13 +62,13 @@ for epoch in range(num_epochs):
                 out_batch = out
            else:
                 seq_buffer = seq_buffer[:,1:,:] # pop
-                seq_buffer = torch.cat(seq[:,:,0])
-                print(seq_idx)
-
-              
-
-        out = model(seq_batch)
-        loss = criterion(out, target_batch)
+                insert_piece = torch.cat( (seq[-1,0].unsqueeze(0), out.squeeze(0).clone().detach()) ).unsqueeze(0)
+                insert_piece[:,1] -= np.pi/2
+                seq_buffer = torch.cat( (seq_buffer, insert_piece.unsqueeze(0)), dim=1 ) # push
+                out = model(seq_buffer)
+                out_batch = torch.cat( (out_batch, out) )
+        
+        loss = criterion(out_batch, target_batch)
         
         optimizer.zero_grad()
         loss.backward()
@@ -81,7 +84,7 @@ plt.plot(loss_graph)
 plt.show()
 
 ## model wieght save
-PATH = "model/train_direct_dict_sl"+str(database.sequence_length)+".pt"
+PATH = "model/train_sparse_feedback_dict_batch"+str(database.batch_size)+".pt"
 torch.save(model.state_dict(), PATH)
 
 
