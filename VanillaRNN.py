@@ -13,6 +13,7 @@ class VanillaRNN(nn.Module):
     self.hidden_size = hidden_size
     self.num_layers = num_layers
     self.rnn = nn.RNN(input_size, hidden_size, num_layers, batch_first=True)
+    # self.fc = nn.Sequential(nn.Linear(hidden_size * sequence_length, 2), nn.Tanh())
     self.fc = nn.Linear(hidden_size * sequence_length, 2)
 
   def forward(self, x):

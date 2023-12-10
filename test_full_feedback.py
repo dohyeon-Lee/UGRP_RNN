@@ -36,7 +36,7 @@ model = VanillaRNN(input_size=input_size,
                    sequence_length=sequence_length,
                    num_layers=num_layers,
                    device=device).to(device)
-PATH = "model/model_dict2.pt"
+PATH = "model/train_direct_dict.pt"
 model.load_state_dict(torch.load(PATH))
 model.eval()
 
@@ -78,7 +78,6 @@ def plotting(model, test_loader, actual_theta, actual_theta_dot):
   out_list = np.array(out_list.cpu())
 
   plt.figure(figsize=(20,5))
-
   plt.plot(time[:292], actual_theta, '--') #theta
   plt.plot(time[:290],out_list[0:-1,0], 'b', linewidth=0.6)
   plt.legend([r'$\theta$',r'$\hat{\theta}$'])

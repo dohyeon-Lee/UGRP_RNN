@@ -23,8 +23,8 @@ print(f'{device} is available')
 ## parameters, dataset
 sequence_length = 8
 batch_size = 20
-train_datasize = 1
-test_datasize = 1
+train_datasize = 30
+test_datasize = 5
 database = data_loader(train_datasize=train_datasize, test_datasize=test_datasize, sequence_length=sequence_length, batch_size=batch_size, device=device)
 
 ## models
@@ -43,7 +43,7 @@ lr = 1e-3
 num_epochs = 200
 optimizer = optim.Adam(model.parameters(), lr=lr)
 loss_graph = [] # 그래프 그릴 목적인 loss.
-
+n = len(database.train_loader[0])
 for epoch in range(num_epochs):
     running_loss = 0.0
     train_loader = database.train_loader[random.randrange(0,train_datasize)]
@@ -110,16 +110,16 @@ for epoch in range(num_epochs):
         loss.backward()
         optimizer.step()
 
-    loss_graph.append(running_loss / 15) # 한 epoch에 모든 배치들에 대한 평균 loss 리스트에 담고,
+    loss_graph.append(running_loss / n) # 한 epoch에 모든 배치들에 대한 평균 loss 리스트에 담고,
     if epoch % 10 == 0:
-      print('[epoch: %d] loss: %.4f'%(epoch, running_loss / 15))
+      print('[epoch: %d] loss: %.4f'%(epoch, running_loss / n))
 
 plt.figure()
 plt.plot(loss_graph)
 plt.show()
 
 ## model wieght save
-PATH = "model/model_dict2.pt"
+PATH = "model/model_dict.pt"
 torch.save(model.state_dict(), PATH)
 
 
