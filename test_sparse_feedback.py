@@ -34,12 +34,12 @@ model = VanillaRNN(input_size=input_size,
                    num_layers=num_layers,
                    device=device).to(device)
 
-# PATH = "model/train_sparse_feedback_dict_batch"+str(database.batch_size)+".pt"
-PATH = "model/train_direct_dict_sl32.pt"
+PATH = "model/train_sparse_feedback_dict_batch"+str(database.batch_size)+".pt"
+# PATH = "model/train_direct_dict_loss123_sl32.pt"
 model.load_state_dict(torch.load(PATH))
 model.eval()
 
-testdata = pd.read_csv('test/test2.csv')
+testdata = pd.read_csv('test/test1.csv')
 test_input = testdata[['u(t)', 'theta', 'theta_dot']].values
 test_input = test_input[:-1]  
 test_output = testdata[['theta','theta_dot']].values
