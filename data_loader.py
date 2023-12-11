@@ -20,7 +20,7 @@ class data_loader():
     def __init__(self, train_datasize, test_datasize, device):
         self.device = device
         self.sequence_length = 32
-        self.batch_size = 20#50
+        self.batch_size = 100#50
 
         # make train dataset
         self.train_datasize = train_datasize 

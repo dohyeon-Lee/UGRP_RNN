@@ -33,12 +33,12 @@ model = VanillaRNN(input_size=input_size,
                    sequence_length=database.sequence_length,
                    num_layers=num_layers,
                    device=device).to(device)
-
-PATH = "model/train_direct_dict_batch_"+str(database.batch_size)+".pt"
+num_epochs = 30
+PATH = "model/train_direct_dict_batch_"+str(database.batch_size)+"_epoch_"+str(num_epochs)+".pt"
 model.load_state_dict(torch.load(PATH))
 model.eval()
 
-testdata = pd.read_csv('test/test4.csv')
+testdata = pd.read_csv('train/train0.csv')
 test_input = testdata[['u(t)', 'theta', 'theta_dot']].values
 test_input = test_input[:-1]  
 test_output = testdata[['theta','theta_dot']].values
@@ -57,7 +57,7 @@ def plotting(model, test_loader, actual_theta, actual_theta_dot):
       out = model(seq)
       theta.extend(out[:,0].squeeze(0).cpu().numpy().tolist())
       theta_dot.extend(out[:,1].squeeze(0).cpu().numpy().tolist())           
-  time = np.linspace(0,20,300)
+  time = np.linspace(0,600,30000)
 
   out_list = np.array(out_list.cpu())
   actual_theta[:] += np.pi/2

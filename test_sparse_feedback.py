@@ -34,8 +34,8 @@ model = VanillaRNN(input_size=input_size,
                    num_layers=num_layers,
                    device=device).to(device)
 
-PATH = "model/train_sparse_feedback_dict_loss123_batch"+str(database.batch_size)+".pt"
-# PATH = "model/train_direct_dict_loss123_sl32.pt"
+# PATH = "model/train_sparse_feedback_dict_loss123_batch"+str(database.batch_size)+".pt"
+PATH = "model/train_direct_dict_batch_"+str(20)+"_epoch_"+str(30)+".pt"
 model.load_state_dict(torch.load(PATH))
 model.eval()
 

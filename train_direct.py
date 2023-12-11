@@ -41,7 +41,7 @@ criterion = nn.MSELoss()
 
 ## training
 lr = 1e-3
-num_epochs = 200
+num_epochs = 30
 optimizer = optim.Adam(model.parameters(), lr=lr)
 loss_graph = [] # 그래프 그릴 목적인 loss.
 n = len(database.train_loader[0])
@@ -102,16 +102,17 @@ for epoch in range(num_epochs):
         running_loss2 += loss2.item()
         running_loss3 += loss3.item()
     running_loss = running_loss1 + running_loss2 + running_loss3
+    writer.add_scalar("Loss/epoch", running_loss, epoch)
     loss_graph.append(running_loss / n) # 한 epoch에 모든 배치들에 대한 평균 loss 리스트에 담고,
     if epoch % 10 == 0:
         print('[epoch: %d] loss1: %.4f loss2: %.4f loss3: %.4f'%(epoch, running_loss1 / n, running_loss2 / n, running_loss3 / n))
-
+writer.close()
 plt.figure()
 plt.plot(loss_graph)
 plt.show()
 
 ## model wieght save
-PATH = "model/train_direct_dict_batch_"+str(database.batch_size)+".pt"
+PATH = "model/train_direct_dict_batch_"+str(database.batch_size)+"_epoch_"+str(num_epochs)+".pt"
 torch.save(model.state_dict(), PATH)
 
 
