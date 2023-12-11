@@ -118,8 +118,8 @@ for epoch in range(num_epochs):
         running_loss1 += loss1.item()
         running_loss2 += loss2.item()
         running_loss3 += loss3.item()
-        running_loss = running_loss1 + running_loss2 + running_loss3
-        writer.add_scalar("Loss/epoch", running_loss, epoch)
+    running_loss = running_loss1 + running_loss2 + running_loss3
+    writer.add_scalar("Loss/epoch", running_loss, epoch)
     loss_graph.append(running_loss / n) # 한 epoch에 모든 배치들에 대한 평균 loss 리스트에 담고,
     if epoch % 10 == 0:
         print('[epoch: %d] loss1: %.4f loss2: %.4f loss3: %.4f'%(epoch, running_loss1 / n, running_loss2 / n, running_loss3 / n))
