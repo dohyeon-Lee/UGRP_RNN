@@ -38,7 +38,7 @@ def func3( t, y):
 
 # Both cart and the pendulum can move.
 if __name__=="__main__":
-    data_num = 30
+
     parser = argparse.ArgumentParser(
         prog="water-pendulum simulation",
         description="make training dataset",
@@ -50,7 +50,7 @@ if __name__=="__main__":
     args = parser.parse_args()
 
     if args.num == None:
-        data = 30
+        data = 1
     else:
         data = args.num
  
@@ -58,7 +58,7 @@ if __name__=="__main__":
         rand_x_dot = 0 #np.random.uniform(-0.5,0.5)
         rand_theta = -np.pi/2 #np.random.uniform(0,np.pi)
         rand_theta_dot = np.random.uniform(-0.5,0.5)
-        sol = solve_ivp(func3, [0, 20], [ 0, rand_x_dot, rand_theta, rand_theta_dot],  t_eval=np.linspace( 0, 20, 300)  )
+        sol = solve_ivp(func3, [0, 600], [ 0, rand_x_dot, rand_theta, rand_theta_dot],  t_eval=np.linspace( 0, 600, 30000)  )
 
         syst = InvertedPendulum()
 
@@ -71,10 +71,10 @@ if __name__=="__main__":
                 break
 
 
-        df = pd.DataFrame(U[0:300], columns=['u(t)'])
+        df = pd.DataFrame(U[0:30000], columns=['u(t)'])
         U = []
-        df['theta'] =sol.y[2,0:300]
-        df['theta_dot'] = sol.y[3,0:300]
+        df['theta'] =sol.y[2,0:30000]
+        df['theta_dot'] = sol.y[3,0:30000]
         if args.mode == "train":
             df.to_csv("../train/train"+str(j)+".csv", index = False)
         else:
