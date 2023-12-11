@@ -25,7 +25,7 @@ class data_loader():
         # make train dataset
         self.train_datasize = train_datasize 
         for i in range(0,self.train_datasize):
-            filename = "train/before/train"+str(i)+".csv"
+            filename = "train/train"+str(i)+".csv"
             traindata = pd.read_csv(filename)
             train_full_data = traindata.values
             if i == 0:

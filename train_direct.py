@@ -15,6 +15,8 @@ from tqdm import tqdm
 import random
 from VanillaRNN import VanillaRNN
 from data_loader import data_loader
+from torch.utils.tensorboard import SummaryWriter
+writer = SummaryWriter()
 
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 print(f'{device} is available')
@@ -22,7 +24,7 @@ print(f'{device} is available')
 
 ## parameters, dataset
 
-train_datasize = 30
+train_datasize = 1
 test_datasize = 1
 database = data_loader(train_datasize=train_datasize, test_datasize=test_datasize, device=device)
 
@@ -39,7 +41,7 @@ criterion = nn.MSELoss()
 
 ## training
 lr = 1e-3
-num_epochs = 300
+num_epochs = 200
 optimizer = optim.Adam(model.parameters(), lr=lr)
 loss_graph = [] # 그래프 그릴 목적인 loss.
 n = len(database.train_loader[0])
@@ -58,7 +60,7 @@ for epoch in range(num_epochs):
         loss1 = criterion(out, target)
         
         # loss 2 calculate
-        dt = 20/300.
+        dt = 600/30000.
         expected_theta_dot = torch.zeros(out[:,0].shape[0]).to(device)
         bbefore_theta = 0
         before_theta = 0
@@ -109,7 +111,7 @@ plt.plot(loss_graph)
 plt.show()
 
 ## model wieght save
-PATH = "model/train_direct_dict_loss123_sl"+str(database.sequence_length)+".pt"
+PATH = "model/train_direct_dict_batch_"+str(database.batch_size)+".pt"
 torch.save(model.state_dict(), PATH)
 
 
