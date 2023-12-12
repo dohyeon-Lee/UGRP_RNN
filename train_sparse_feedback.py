@@ -18,7 +18,7 @@ from data_loader import data_loader
 from torch.utils.tensorboard import SummaryWriter
 writer = SummaryWriter()
 import argparse
-
+from training_database import training_database
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 print(f'{device} is available')
 if __name__=="__main__":
@@ -57,39 +57,49 @@ if __name__=="__main__":
     optimizer = optim.Adam(model.parameters(), lr=lr)
     loss_graph = [] # 그래프 그릴 목적인 loss.
     n = len(database.train_loader[0])
+    
+    training_db = training_database()
 
     for epoch in range(num_epochs):
         running_loss1 = 0.0
         running_loss2 = 0.0
         running_loss3 = 0.0
         train_loader = database.train_loader[random.randrange(0,train_datasize)]
+        training_db.timestep = 0
         for batch_idx, data in enumerate(train_loader):
             
             seq_batch, target_batch = data #seq, target은 20개, seq는 3차원 배열 20*8*3 , target은 2차원 배열 20*2
             target_batch[:,0] += np.pi/2
 
             for seq_idx, seq in enumerate(seq_batch):
-                if seq_idx == 0:
-                    out = model(seq.unsqueeze(0))
-                    seq_buffer = seq.unsqueeze(0)
-                    out_batch = out
+                
+                if training_db.timestep % training_db.true_period == 0:
+                    training_db.out = model(seq.unsqueeze(0))
+                    training_db.seq_buffer = seq.unsqueeze(0)                 
+                    
                 else:
-                    seq_buffer = seq_buffer[:,1:,:] # pop
-                    insert_piece = torch.cat( (seq[-1,0].unsqueeze(0), out.squeeze(0).clone().detach()) ).unsqueeze(0)
+                    training_db.seq_buffer = training_db.seq_buffer[:,1:,:] # pop
+                    insert_piece = torch.cat( (seq[-1,0].unsqueeze(0), training_db.out.squeeze(0).clone().detach()) ).unsqueeze(0)
                     insert_piece[:,1] -= np.pi/2
-                    seq_buffer = torch.cat( (seq_buffer, insert_piece.unsqueeze(0)), dim=1 ) # push
-                    out = model(seq_buffer)
-                    out_batch = torch.cat( (out_batch, out) )
+                    training_db.seq_buffer = torch.cat( (training_db.seq_buffer, insert_piece.unsqueeze(0)), dim=1 ) # push
+                    training_db.out = model(training_db.seq_buffer)      
+
+                if seq_idx == 0:
+                    training_db.out_batch = training_db.out
+                else:
+                    training_db.out_batch = torch.cat( (training_db.out_batch, training_db.out) )
+
+                training_db.timestep += 1
             # loss 1 calculate
-            loss1 = criterion(out_batch, target_batch)
+            loss1 = criterion(training_db.out_batch, target_batch)
             
             # loss 2 calculate
             dt = 600/30000.
-            expected_theta_dot = torch.zeros(out_batch[:,0].shape[0]).to(device)
+            expected_theta_dot = torch.zeros(training_db.out_batch[:,0].shape[0]).to(device)
             
             bbefore_theta = 0
             before_theta = 0
-            for idx, theta in enumerate(out_batch[:,0]):
+            for idx, theta in enumerate(training_db.out_batch[:,0]):
                 if idx > 1:
                     theta_dot = (theta - bbefore_theta)/dt 
                     expected_theta_dot[idx-1] = theta_dot
@@ -105,10 +115,10 @@ if __name__=="__main__":
             k = 0.8 # coefficients c/m
             x_ddot = seq_batch[1:,-1,0]
             true_theta_ddot = -k*target_batch[:-1,1]*torch.cos(target_batch[:-1,0])-(g/L)*torch.sin(target_batch[:-1,0])+(x_ddot/L)*torch.cos(target_batch[:-1,0])
-            expected_theta_ddot = torch.zeros(out_batch[:,0].shape[0]).to(device)
+            expected_theta_ddot = torch.zeros(training_db.out_batch[:,0].shape[0]).to(device)
             bbefore_theta_dot = 0
             before_theta_dot = 0
-            for idx, theta_dot in enumerate(out_batch[:,1]):
+            for idx, theta_dot in enumerate(training_db.out_batch[:,1]):
                 if idx > 1:
                     theta_ddot = (theta_dot - bbefore_theta_dot)/dt 
                     expected_theta_ddot[idx-1] = theta_ddot
@@ -119,7 +129,7 @@ if __name__=="__main__":
             loss1 = 100*loss1 # 100
             loss2 = 0.01*loss2 # 0.01
             loss3 = 0.001*loss3 # 0.001
-            loss = loss1 #+ loss2 #+ loss3
+            loss = loss1 + loss2 + loss3
 
             optimizer.zero_grad()
             loss.backward()
@@ -136,7 +146,7 @@ if __name__=="__main__":
         
         print('[epoch: %d] loss1: %.4f loss2: %.4f loss3: %.4f'%(epoch, running_loss1 / n, running_loss2 / n, running_loss3 / n))
         if epoch % 50 == 0:
-            PATH = "model/checkpoint/train_sparse_feedback_dict_batch"+str(database.batch_size)+"_epoch_" + str(num_epochs)+"\\"+str(epoch)+"_loss1.pt"
+            PATH = "model/checkpoint/train_sparse_feedback_dict_batch"+str(database.batch_size)+"_epoch_" + str(num_epochs)+"\\"+str(epoch)+"_loss123.pt"
             torch.save(model.state_dict(), PATH)
     writer.close()
     plt.figure()
@@ -144,7 +154,7 @@ if __name__=="__main__":
     plt.show()
 
     ## model wieght save
-    PATH = "model/train_sparse_feedback_dict_batch"+str(database.batch_size)+"_epoch_" + str(num_epochs)+ "_loss1.pt"
+    PATH = "model/train_sparse_feedback_dict_batch"+str(database.batch_size)+"_epoch_" + str(num_epochs)+ "_loss123.pt"
     torch.save(model.state_dict(), PATH)
 
 

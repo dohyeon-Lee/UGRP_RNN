@@ -21,6 +21,7 @@ class data_loader():
         self.device = device
         self.sequence_length = 32
         self.batch_size = 50
+        
         print("batch_size :",self.batch_size)
         # make train dataset
         self.train_datasize = train_datasize 
