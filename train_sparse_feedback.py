@@ -127,8 +127,8 @@ if __name__=="__main__":
             loss3 = criterion(expected_theta_ddot[1:-1], true_theta_ddot[1:])
 
             loss1 = 100*loss1 # 100
-            loss2 = 0.01*loss2 # 0.01
-            loss3 = 0.001*loss3 # 0.001
+            loss2 = 1*loss2 # 0.01
+            loss3 = 0.1*loss3 # 0.001
             loss = loss1 + loss2 + loss3
 
             optimizer.zero_grad()
@@ -146,7 +146,7 @@ if __name__=="__main__":
         
         print('[epoch: %d] loss1: %.4f loss2: %.4f loss3: %.4f'%(epoch, running_loss1 / n, running_loss2 / n, running_loss3 / n))
         if epoch % 50 == 0:
-            PATH = "model/checkpoint/train_sparse_feedback_dict_batch"+str(database.batch_size)+"_epoch_" + str(num_epochs)+"\\"+str(epoch)+"_loss123.pt"
+            PATH = "model/checkpoint/train_sparse_feedback_dict_batch"+str(database.batch_size)+"_epoch_" + str(num_epochs)+"\\"+str(epoch)+"_loss123_2.pt"
             torch.save(model.state_dict(), PATH)
     writer.close()
     plt.figure()
@@ -154,7 +154,7 @@ if __name__=="__main__":
     plt.show()
 
     ## model wieght save
-    PATH = "model/train_sparse_feedback_dict_batch"+str(database.batch_size)+"_epoch_" + str(num_epochs)+ "_loss123.pt"
+    PATH = "model/train_sparse_feedback_dict_batch"+str(database.batch_size)+"_epoch_" + str(num_epochs)+ "_loss123_2.pt"
     torch.save(model.state_dict(), PATH)
 
 
