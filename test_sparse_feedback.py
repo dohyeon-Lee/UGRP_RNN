@@ -15,6 +15,7 @@ from tqdm import tqdm
 import random
 from VanillaRNN import VanillaRNN
 from data_loader import data_loader
+import argparse
 
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 print(f'{device} is available')
@@ -35,18 +36,6 @@ model = VanillaRNN(input_size=input_size,
                    device=device).to(device)
 
 # PATH = "model/train_sparse_feedback_dict_loss123_batch"+str(database.batch_size)+".pt"
-PATH = "model/train_direct_dict_batch_"+str(20)+"_epoch_"+str(30)+".pt"
-model.load_state_dict(torch.load(PATH))
-model.eval()
-
-testdata = pd.read_csv('test/test1.csv')
-test_input = testdata[['u(t)', 'theta', 'theta_dot']].values
-test_input = test_input[:-1]
-test_output = testdata[['theta','theta_dot']].values
-
-test_input_seq, test_output_seq = database.seq_data(test_input, test_output, database.sequence_length)
-test = torch.utils.data.TensorDataset(test_input_seq, test_output_seq)
-test_loader = torch.utils.data.DataLoader(dataset=test, batch_size=database.batch_size, shuffle=False)
 
 def plotting(model, test_loader, actual_theta, actual_theta_dot):
     
@@ -71,11 +60,15 @@ def plotting(model, test_loader, actual_theta, actual_theta_dot):
                 theta.extend(out[:,0].cpu().numpy().tolist())
                 theta_dot.extend(out[:,1].cpu().numpy().tolist())           
     
-    time = np.linspace(0,20,300)
+    # time = np.linspace(0,20,300)
+    print(len(theta))
+    time_length = 600
+    time = np.linspace(0,time_length,time_length*50)
     actual_theta[:] += np.pi/2
     plt.figure(figsize=(20,5))
     plt.plot(time[:len(actual_theta)], actual_theta, '--') #theta
     plt.plot(time[:len(theta)],theta , 'b', linewidth=0.6)
+    plt.axvline((1/50)*database.batch_size, -1, 1, color='black', linestyle='--', linewidth=5)
     plt.legend([r'$\theta$',r'$\hat{\theta}$'])
     plt.xlabel('t(s)')
     plt.ylabel(r'$\theta$')
@@ -84,6 +77,7 @@ def plotting(model, test_loader, actual_theta, actual_theta_dot):
     plt.figure(figsize=(20,5))
     plt.plot(time[:len(actual_theta_dot)],actual_theta_dot,'r' '--') #theta_dot  
     plt.plot(time[:len(theta_dot)], theta_dot, 'r', linewidth=0.6)
+    plt.axvline((1/50)*database.batch_size, -1, 1, color='black', linestyle='--', linewidth=5)
     plt.grid(True)
 
     plt.legend([r'$\dot{\theta}$', r'$\hat{\dot{\theta}}$'])
@@ -91,4 +85,34 @@ def plotting(model, test_loader, actual_theta, actual_theta_dot):
     plt.ylabel(r'$\dot{\theta}$')
     plt.show()
 
-plotting(model, test_loader, testdata['theta'][database.sequence_length:],testdata['theta_dot'][database.sequence_length:])
+
+if __name__=="__main__":
+    parser = argparse.ArgumentParser(
+        prog="test_sparse_feedback",
+        description="test",
+        epilog="2023_UGRP"
+    )
+    parser.add_argument("--model", type=str, help=".pt file name",required=True)
+    parser.add_argument("--testdata", type=str, help="test file name",required=False)
+    parser.add_argument("--true_period", type=int, help="period of true data", required=False)
+    args = parser.parse_args()
+    if args.testdata == None:
+        testfile_name = 'test/test0.csv'
+    else:
+        testfile_name = args.testdata
+    if args.true_period != None:
+        database.batch_size = args.true_period * 50
+    PATH = "model/" + args.model
+    model.load_state_dict(torch.load(PATH))
+    model.eval()
+
+    testdata = pd.read_csv(testfile_name)
+    test_input = testdata[['u(t)', 'theta', 'theta_dot']].values
+    test_input = test_input[:-1]
+    test_output = testdata[['theta','theta_dot']].values
+
+    test_input_seq, test_output_seq = database.seq_data(test_input, test_output, database.sequence_length)
+    test = torch.utils.data.TensorDataset(test_input_seq, test_output_seq)
+    test_loader = torch.utils.data.DataLoader(dataset=test, batch_size=database.batch_size, shuffle=False)
+    
+    plotting(model, test_loader, testdata['theta'][database.sequence_length:],testdata['theta_dot'][database.sequence_length:])

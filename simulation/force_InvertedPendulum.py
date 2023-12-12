@@ -47,18 +47,28 @@ if __name__=="__main__":
 
     parser.add_argument("--mode", type=str, help="train or test",required=True)
     parser.add_argument("--num", type=int, help="num of dataset",required=False)
+    parser.add_argument("--timelength", type=int, help="time length",required=False)
+    parser.add_argument("--Hz", type=int, help="data hz",required=False)
     args = parser.parse_args()
 
     if args.num == None:
         data = 1
     else:
         data = args.num
- 
+    if args.timelength == None:
+        timelength = 600
+    else:
+        timelength = args.timelength
+    if args.Hz == None:
+        Hz = 50
+    else:
+        Hz = args.Hz
+
     for j in range(0,data):
         rand_x_dot = 0 #np.random.uniform(-0.5,0.5)
         rand_theta = -np.pi/2 #np.random.uniform(0,np.pi)
         rand_theta_dot = np.random.uniform(-0.5,0.5)
-        sol = solve_ivp(func3, [0, 600], [ 0, rand_x_dot, rand_theta, rand_theta_dot],  t_eval=np.linspace( 0, 600, 30000)  )
+        sol = solve_ivp(func3, [0, timelength], [ 0, rand_x_dot, rand_theta, rand_theta_dot],  t_eval=np.linspace( 0, timelength, timelength*Hz)  )
 
         syst = InvertedPendulum()
 
@@ -71,10 +81,10 @@ if __name__=="__main__":
                 break
 
 
-        df = pd.DataFrame(U[0:30000], columns=['u(t)'])
+        df = pd.DataFrame(U[0:timelength*Hz], columns=['u(t)'])
         U = []
-        df['theta'] =sol.y[2,0:30000]
-        df['theta_dot'] = sol.y[3,0:30000]
+        df['theta'] =sol.y[2,0:timelength*Hz]
+        df['theta_dot'] = sol.y[3,0:timelength*Hz]
         if args.mode == "train":
             df.to_csv("../train/train"+str(j)+".csv", index = False)
         else:
