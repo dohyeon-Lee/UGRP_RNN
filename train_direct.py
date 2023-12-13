@@ -41,7 +41,7 @@ criterion = nn.MSELoss()
 
 ## training
 lr = 1e-3
-num_epochs = 30
+num_epochs = 50
 optimizer = optim.Adam(model.parameters(), lr=lr)
 loss_graph = [] # 그래프 그릴 목적인 loss.
 n = len(database.train_loader[0])
@@ -66,7 +66,7 @@ for epoch in range(num_epochs):
         before_theta = 0
         for idx, theta in enumerate(out[:,0]):
             if idx > 1:
-                theta_dot = (theta - bbefore_theta)/dt 
+                theta_dot = (theta - bbefore_theta)/(2*dt) 
                 expected_theta_dot[idx-1] = theta_dot
             bbefore_theta = before_theta
             before_theta = theta       
@@ -77,15 +77,15 @@ for epoch in range(num_epochs):
         L = 1.5 
         m = 1.0
         M = 2.0 
-        k = 0.8 # coefficients c/m
+        k = 8 # coefficients c/m
         x_ddot = seq[1:,-1,0]
-        true_theta_ddot = -k*target[:-1,1]*torch.cos(target[:-1,0])-(g/L)*torch.sin(target[:-1,0])+(x_ddot/L)*torch.cos(target[:-1,0])
+        true_theta_ddot = -k*target[:-1,1]*torch.cos(target[:-1,0])-(g/L)*torch.sin(target[:-1,0])-(x_ddot/L)*torch.cos(target[:-1,0])
         expected_theta_ddot = torch.zeros(out[:,0].shape[0]).to(device)
         bbefore_theta_dot = 0
         before_theta_dot = 0
         for idx, theta_dot in enumerate(out[:,1]):
             if idx > 1:
-                theta_ddot = (theta_dot - bbefore_theta_dot)/dt 
+                theta_ddot = (theta_dot - bbefore_theta_dot)/(2*dt) 
                 expected_theta_ddot[idx-1] = theta_ddot
             bbefore_theta_dot = before_theta_dot
             before_theta_dot = theta_dot       
@@ -94,7 +94,7 @@ for epoch in range(num_epochs):
         loss1 = 100*loss1
         loss2 = 0.1*loss2
         loss3 = 0.01*loss3
-        loss = loss1 + loss2 + loss3
+        loss = loss1 # loss2 + loss3
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
@@ -112,7 +112,7 @@ plt.plot(loss_graph)
 plt.show()
 
 ## model wieght save
-PATH = "model/train_direct_dict_batch_"+str(database.batch_size)+"_epoch_"+str(num_epochs)+".pt"
+PATH = "model/train_direct_dict_batch_"+str(database.batch_size)+"_epoch_"+str(num_epochs)+"_loss1.pt"
 torch.save(model.state_dict(), PATH)
 
 

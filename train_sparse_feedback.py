@@ -75,8 +75,7 @@ if __name__=="__main__":
                 
                 if training_db.timestep % training_db.true_period == 0:
                     training_db.out = model(seq.unsqueeze(0))
-                    training_db.seq_buffer = seq.unsqueeze(0)                 
-                    
+                    training_db.seq_buffer = seq.unsqueeze(0)                         
                 else:
                     training_db.seq_buffer = training_db.seq_buffer[:,1:,:] # pop
                     insert_piece = torch.cat( (seq[-1,0].unsqueeze(0), training_db.out.squeeze(0).clone().detach()) ).unsqueeze(0)
@@ -101,7 +100,7 @@ if __name__=="__main__":
             before_theta = 0
             for idx, theta in enumerate(training_db.out_batch[:,0]):
                 if idx > 1:
-                    theta_dot = (theta - bbefore_theta)/dt 
+                    theta_dot = (theta - bbefore_theta)/(2*dt) 
                     expected_theta_dot[idx-1] = theta_dot
                 bbefore_theta = before_theta
                 before_theta = theta       
@@ -112,23 +111,23 @@ if __name__=="__main__":
             L = 1.5 
             m = 1.0
             M = 2.0 
-            k = 0.8 # coefficients c/m
+            k = 8 # coefficients c/m
             x_ddot = seq_batch[1:,-1,0]
-            true_theta_ddot = -k*target_batch[:-1,1]*torch.cos(target_batch[:-1,0])-(g/L)*torch.sin(target_batch[:-1,0])+(x_ddot/L)*torch.cos(target_batch[:-1,0])
+            true_theta_ddot = -k*target_batch[:-1,1]*torch.cos(target_batch[:-1,0])-(g/L)*torch.sin(target_batch[:-1,0])-(x_ddot/L)*torch.cos(target_batch[:-1,0])
             expected_theta_ddot = torch.zeros(training_db.out_batch[:,0].shape[0]).to(device)
             bbefore_theta_dot = 0
             before_theta_dot = 0
             for idx, theta_dot in enumerate(training_db.out_batch[:,1]):
                 if idx > 1:
-                    theta_ddot = (theta_dot - bbefore_theta_dot)/dt 
+                    theta_ddot = (theta_dot - bbefore_theta_dot)/(2*dt) 
                     expected_theta_ddot[idx-1] = theta_ddot
                 bbefore_theta_dot = before_theta_dot
                 before_theta_dot = theta_dot       
             loss3 = criterion(expected_theta_ddot[1:-1], true_theta_ddot[1:])
 
             loss1 = 100*loss1 # 100
-            loss2 = 1*loss2 # 0.01
-            loss3 = 0.1*loss3 # 0.001
+            loss2 = 0.01*loss2 # 0.01
+            loss3 = 0.001*loss3 # 0.001
             loss = loss1 + loss2 + loss3
 
             optimizer.zero_grad()
@@ -146,15 +145,15 @@ if __name__=="__main__":
         
         print('[epoch: %d] loss1: %.4f loss2: %.4f loss3: %.4f'%(epoch, running_loss1 / n, running_loss2 / n, running_loss3 / n))
         if epoch % 50 == 0:
-            PATH = "model/checkpoint/train_sparse_feedback_dict_batch"+str(database.batch_size)+"_epoch_" + str(num_epochs)+"\\"+str(epoch)+"_loss123_2.pt"
+            PATH = "model/checkpoint/train_sparse_feedback_dict_batch"+str(database.batch_size)+"_epoch_" + str(num_epochs)+"\\"+str(epoch)+"_loss123.pt"
             torch.save(model.state_dict(), PATH)
     writer.close()
     plt.figure()
     plt.plot(loss_graph)
     plt.show()
 
-    ## model wieght save
-    PATH = "model/train_sparse_feedback_dict_batch"+str(database.batch_size)+"_epoch_" + str(num_epochs)+ "_loss123_2.pt"
+    ## model weight save
+    PATH = "model/train_sparse_feedback_dict_batch"+str(database.batch_size)+"_epoch_" + str(num_epochs)+ "_loss123.pt"
     torch.save(model.state_dict(), PATH)
 
 

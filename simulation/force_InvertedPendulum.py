@@ -5,16 +5,23 @@ import argparse
 from InvertedPendulum import InvertedPendulum
 from scipy.integrate import solve_ivp
 
-U = []
+
 #가속도 u(t)
 global_h = 0
-def u( t ,j):
+def u(t):
     global global_h
     time = np.random.randn()
-    if (time>0.5):
+    if (time > 1.5):
         global_h = 25*np.random.rand()-12.5
     
     a = global_h+np.random.randn()
+
+    # if t>0 and t < 0.5:
+    #     return 15
+    # elif t >= 0.5  and t < 1:
+    #     return -35
+    # else:
+    #     return -35
 
     return a
 
@@ -23,18 +30,16 @@ def u( t ,j):
 def func3( t, y):
     g = 9.8 
     L = 1.5 
-    m = 1.0
+    m = 1.0 
     M = 2.0 
-    k = 0.8 # coefficients c/m
+    k = 8 # coefficients c/m
     
-    x_ddot = u(t,j)
-    
-    U.append(x_ddot)
-    theta_ddot = -k*y[3]*np.cos(y[2]+np.pi/2)-(g/L)*np.sin(y[2]+np.pi/2)+(x_ddot/L)*np.cos(y[2]+np.pi/2)
+    x_ddot = u(t)
+  
+    theta_ddot = -k*y[3]*np.cos(y[2]+np.pi/2)-(g/L)*np.sin(y[2]+np.pi/2)-(x_ddot/L)*np.cos(y[2]+np.pi/2)
 
 # xdot, xddot, thetadot, theta_ddot
     return [ y[1], x_ddot, y[3], theta_ddot ]
-
 
 # Both cart and the pendulum can move.
 if __name__=="__main__":
@@ -49,6 +54,7 @@ if __name__=="__main__":
     parser.add_argument("--num", type=int, help="num of dataset",required=False)
     parser.add_argument("--timelength", type=int, help="time length",required=False)
     parser.add_argument("--Hz", type=int, help="data hz",required=False)
+    parser.add_argument("--animation", type=str, help="visualization, False or True",required=False)
     args = parser.parse_args()
 
     if args.num == None:
@@ -63,28 +69,41 @@ if __name__=="__main__":
         Hz = 50
     else:
         Hz = args.Hz
-
+    if args.animation == None:
+        animation = "True"
+    else:
+        animation = args.animation
     for j in range(0,data):
         rand_x_dot = 0 #np.random.uniform(-0.5,0.5)
         rand_theta = -np.pi/2 #np.random.uniform(0,np.pi)
         rand_theta_dot = np.random.uniform(-0.5,0.5)
-        sol = solve_ivp(func3, [0, timelength], [ 0, rand_x_dot, rand_theta, rand_theta_dot],  t_eval=np.linspace( 0, timelength, timelength*Hz)  )
+        sol = solve_ivp(func3, [0, timelength], [0, rand_x_dot, rand_theta, rand_theta_dot],  t_eval=np.linspace( 0, timelength, timelength*Hz)  )
 
         syst = InvertedPendulum()
+        if animation == "True":
+            for i, t in enumerate(sol.t):
+                rendered = syst.step( [sol.y[0,i], sol.y[1,i], sol.y[2,i], sol.y[3,i]], t )
+                cv2.imshow( 'im', rendered )
+                cv2.moveWindow( 'im', 100, 100 )
+                # cv2.resizeWindow(winname='im', width=2000, height=150)
+                if cv2.waitKey(30) == ord('q'):
+                    break
+        
+        before_xdot = 0
+        bbefore_xdot = 0
+        dt = 1/Hz
+        U = np.zeros_like(sol.y[1,0:timelength*Hz])
+        for idx, xdot in enumerate(sol.y[1,0:timelength*Hz]):
+            if idx > 1:
+                xddot = (xdot - bbefore_xdot)/(2*dt) 
+                U[idx-1] = xddot
+            bbefore_xdot = before_xdot
+            before_xdot = xdot       
+        
+        df = pd.DataFrame(U[1:timelength*Hz-1], columns=['u(t)'])
 
-        for i, t in enumerate(sol.t):
-            rendered = syst.step( [sol.y[0,i], sol.y[1,i], sol.y[2,i], sol.y[3,i] ], t )
-            cv2.imshow( 'im', rendered )
-            cv2.moveWindow( 'im', 100, 100 )
-
-            if cv2.waitKey(30) == ord('q'):
-                break
-
-
-        df = pd.DataFrame(U[0:timelength*Hz], columns=['u(t)'])
-        U = []
-        df['theta'] =sol.y[2,0:timelength*Hz]
-        df['theta_dot'] = sol.y[3,0:timelength*Hz]
+        df['theta'] =sol.y[2,1:timelength*Hz-1]
+        df['theta_dot'] = sol.y[3,1:timelength*Hz-1]
         if args.mode == "train":
             df.to_csv("../train/train"+str(j)+".csv", index = False)
         else:
