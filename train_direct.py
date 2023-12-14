@@ -24,17 +24,16 @@ print(f'{device} is available')
 
 ## parameters, dataset
 
-train_datasize = 1
-test_datasize = 1
-database = data_loader(train_datasize=train_datasize, test_datasize=test_datasize, device=device)
+database = data_loader(device=device)
 
 ## models
-input_size = database.train_input_seq[0].size(2) #3
+input_size = 1 
+
 num_layers = 2
 hidden_size = 8
 model = VanillaRNN(input_size=input_size,
                    hidden_size=hidden_size,
-                   sequence_length=database.sequence_length,
+                   
                    num_layers=num_layers,
                    device=device).to(device)
 criterion = nn.MSELoss()
@@ -44,19 +43,19 @@ lr = 1e-3
 num_epochs = 50
 optimizer = optim.Adam(model.parameters(), lr=lr)
 loss_graph = [] # 그래프 그릴 목적인 loss.
-n = len(database.train_loader[0])
+n = len(database.train_loader)
 
 for epoch in range(num_epochs):
     running_loss = 0.0
-    train_loader = database.train_loader[random.randrange(0,train_datasize)]
-    for data in train_loader:
+    for data in database.train_loader:
         
         # loss 1 calculate
-        seq, target = data #seq, target은 20개, seq는 3차원 배열 20*8*3 , target은 2차원 배열 20*2
-        target[:,0] += np.pi/2
+        seq, target = data 
+        target[:,:,0] += np.pi/2
         out = model(seq)
         loss = criterion(out, target)
-
+        print("out",out.shape)
+        print("target",target.shape)
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
