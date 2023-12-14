@@ -16,10 +16,9 @@ class VanillaRNN(nn.Module):
     # self.fc = nn.Sequential(nn.Linear(hidden_size * sequence_length, 2), nn.Tanh())
     self.fc = nn.Linear(hidden_size, 2)
 
-  def forward(self, x):
-    h0 = torch.zeros(self.num_layers, x.size()[0], self.hidden_size).to(self.device) # 초기 hidden state 설정하기.
-    out, _ = self.rnn(x, h0) # out: RNN의 마지막 레이어로부터 나온 output feature 를 반환한다. hn: hidden state를 반환한다.
+  def forward(self, x, hn):
+    out, hn = self.rnn(x, hn) # out: RNN의 마지막 레이어로부터 나온 output feature 를 반환한다. hn: hidden state를 반환한다.
     out = self.fc(out)
     # out = out.reshape(out.shape[0], -1) # many to many 전략
     # out = self.fc(out)
-    return out
+    return out, hn

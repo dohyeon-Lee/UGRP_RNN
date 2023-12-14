@@ -19,13 +19,17 @@ class data_loader():
     
     def __init__(self, device):
         self.device = device
-        self.sequence_length = 32
-        self.batch_size = 20
         
+        self.sequence_length = 100
+        self.batch_size = 20
+        self.num_epochs = 100
+        
+        print("total_epochs: ",self.num_epochs)
         print("batch_size :",self.batch_size)
-        # make train dataset
+        print("sequence_length :",self.sequence_length)
 
-      
+        # make train dataset
+    
         filename = "train/train0.csv"
         traindata = pd.read_csv(filename)
         train_full_data = traindata.values
@@ -34,24 +38,24 @@ class data_loader():
         self.train_output_seq = train_full_data[1:,1:3] # delete first data
 
         self.train_input_seq, self.train_output_seq = self.seq_data(self.train_input_seq, self.train_output_seq, self.sequence_length)
-
+        self.train_input_seq = self.train_input_seq.unsqueeze(-1)
         train = torch.utils.data.TensorDataset(self.train_input_seq, self.train_output_seq)
         self.train_loader = torch.utils.data.DataLoader(train, batch_size=self.batch_size, shuffle=False)
         
     
         #make test dataset
 
-        filename = "test/test0.csv"
+        filename = "test/test1.csv"
         testdata = pd.read_csv(filename)
         test_full_data = testdata.values
 
         self.test_input_seq = test_full_data[:-1,1] # delete last data
         self.test_output_seq = test_full_data[1:,1:3]
         
-        self.test_input_seq, self.test_output_seq = self.seq_data(self.test_input_seq, self.test_output_seq, self.sequence_length)
-
+        self.test_input_seq = torch.FloatTensor(self.test_input_seq).to(self.device).unsqueeze(-1).unsqueeze(1)
+        self.test_output_seq = torch.FloatTensor(self.test_output_seq).to(self.device).unsqueeze(1)
         test = torch.utils.data.TensorDataset(self.test_input_seq, self.test_output_seq)
-        self.test_loader = torch.utils.data.DataLoader(test, batch_size=self.batch_size, shuffle=False)
+        self.test_loader = torch.utils.data.DataLoader(test, batch_size=self.test_output_seq.shape[0], shuffle=False)
 
            
 
@@ -69,8 +73,9 @@ if __name__=="__main__":
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
     print(f'{device} is available')
     database = data_loader(device)
+    # print(database.test_output_seq.shape)
     print(len(database.train_loader))
-    for data in database.train_loader:
+    for data in database.test_loader:
         seq, target = data
         print("seq:", seq.shape)
         print("target:", target.shape)
