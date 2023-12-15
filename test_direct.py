@@ -19,7 +19,7 @@ from data_loader import data_loader
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 print(f'{device} is available')
 
-database = data_loader(device=device)
+database = data_loader(num_epochs=200, device=device)
 
 ## models
 input_size = 1

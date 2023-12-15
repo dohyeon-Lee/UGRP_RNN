@@ -14,15 +14,17 @@ import cv2
 from tqdm import tqdm
 import random
 from VanillaRNN import VanillaRNN
+device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+print(f'{device} is available')
 
 class data_loader():
     
-    def __init__(self, device):
+    def __init__(self, num_epochs=100, device=device):
         self.device = device
         
         self.sequence_length = 100
         self.batch_size = 20
-        self.num_epochs = 100
+        self.num_epochs = num_epochs
         
         print("total_epochs: ",self.num_epochs)
         print("batch_size :",self.batch_size)
@@ -34,8 +36,8 @@ class data_loader():
         traindata = pd.read_csv(filename)
         train_full_data = traindata.values
     
-        self.train_input_seq = train_full_data[:-1,1] # delete last data
-        self.train_output_seq = train_full_data[1:,1:3] # delete first data
+        self.train_input_seq = train_full_data[:,1] # delete last data
+        self.train_output_seq = train_full_data[:,1:3] # delete first data
 
         self.train_input_seq, self.train_output_seq = self.seq_data(self.train_input_seq, self.train_output_seq, self.sequence_length)
         self.train_input_seq = self.train_input_seq.unsqueeze(-1)
@@ -45,12 +47,12 @@ class data_loader():
     
         #make test dataset
 
-        filename = "test/test1.csv"
+        filename = "test/test2.csv"
         testdata = pd.read_csv(filename)
         test_full_data = testdata.values
 
-        self.test_input_seq = test_full_data[:-1,1] # delete last data
-        self.test_output_seq = test_full_data[1:,1:3]
+        self.test_input_seq = test_full_data[:,1] # delete last data
+        self.test_output_seq = test_full_data[:,1:3]
         
         self.test_input_seq = torch.FloatTensor(self.test_input_seq).to(self.device).unsqueeze(-1).unsqueeze(1)
         self.test_output_seq = torch.FloatTensor(self.test_output_seq).to(self.device).unsqueeze(1)
