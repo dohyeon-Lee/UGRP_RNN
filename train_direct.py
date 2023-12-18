@@ -70,11 +70,14 @@ for epoch in range(num_epochs):
         loss2 = criterion(expected_theta_dot[1:-1], target_batch[0,1:-1,1])
         
         # loss 3 calculate (use only 0th batch)
+        # g = 9.8 
+        # L = 1.5 
+        # m = 1.0
+        # k = 8 # coefficients c/m
         g = 9.8 
-        L = 1.5 
-        m = 1.0
-        M = 2.0 
-        k = 8 # coefficients c/m
+        L = 1./21.  
+        m = 1.0 
+        k = 0.58 # coefficients c/m
         x_ddot = seq_batch[0,:-1,0]
         true_theta_ddot = -k*target_batch[0,:-1,1]*torch.cos(target_batch[0,:-1,0])-(g/L)*torch.sin(target_batch[0,:-1,0])-(x_ddot/L)*torch.cos(target_batch[0,:-1,0])
         expected_theta_ddot = torch.zeros(out.shape[1]).to(device)
@@ -117,7 +120,7 @@ plt.plot(loss_graph)
 plt.show()
 
 ## model weight save
-PATH = "model/train_direct_dict_batch_"+str(database.batch_size)+"_epoch_"+str(num_epochs)+"_loss123.pt"
+PATH = "weight/train_direct_dict_real_batch_"+str(database.batch_size)+"_epoch_"+str(num_epochs)+"_loss123.pt"
 torch.save(model.state_dict(), PATH)
 
 

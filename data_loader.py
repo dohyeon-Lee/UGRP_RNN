@@ -32,7 +32,7 @@ class data_loader():
 
         # make train dataset
     
-        filename = "train/train0.csv"
+        filename = "train/train_real0.csv"
         traindata = pd.read_csv(filename)
         train_full_data = traindata.values
     
@@ -47,7 +47,7 @@ class data_loader():
     
         #make test dataset
 
-        filename = "test/test2.csv"
+        filename = "test/test_real_LQR_0.csv"
         testdata = pd.read_csv(filename)
         test_full_data = testdata.values
 

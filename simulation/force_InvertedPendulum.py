@@ -12,9 +12,9 @@ def u(t):
     global global_h
     time = np.random.randn()
     if (time > 1.5):
-        global_h = 25*np.random.rand()-12.5
+        global_h = 10*np.random.rand()-5
     
-    a = global_h+np.random.randn()
+    a = global_h + 0.5*np.random.randn()
 
     # if t>0 and t < 0.5:
     #     return 15
@@ -23,17 +23,19 @@ def u(t):
     # else:
     #     return -35
 
-    return a
+    return a*0.5
 
 
 # Y : [ x, x_dot, theta, theta_dot]
 def func3( t, y):
+    # g = 9.8 
+    # L = 1.5 
+    # m = 1.0 
+    # k = 8 # coefficients c/m
     g = 9.8 
-    L = 1.5 
+    L = 1./21.  
     m = 1.0 
-    M = 2.0 
-    k = 8 # coefficients c/m
-    
+    k = 0.58 # coefficients c/m
     x_ddot = u(t)
   
     theta_ddot = -k*y[3]*np.cos(y[2]+np.pi/2)-(g/L)*np.sin(y[2]+np.pi/2)-(x_ddot/L)*np.cos(y[2]+np.pi/2)
@@ -105,7 +107,7 @@ if __name__=="__main__":
         df['theta'] =sol.y[2,1:timelength*Hz-1]
         df['theta_dot'] = sol.y[3,1:timelength*Hz-1]
         if args.mode == "train":
-            df.to_csv("../train/train"+str(j)+".csv", index = False)
+            df.to_csv("../train/train_real"+str(j)+".csv", index = False)
         else:
-            df.to_csv("../test/test"+str(j)+".csv", index = False)
+            df.to_csv("../test/test_real"+str(j)+".csv", index = False)
 
