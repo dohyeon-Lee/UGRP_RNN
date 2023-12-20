@@ -18,7 +18,7 @@ from data_loader import data_loader
 from torch.utils.tensorboard import SummaryWriter
 writer = SummaryWriter()
 
-device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+device = torch.device('cpu')
 print(f'{device} is available')
 
 
@@ -41,3 +41,15 @@ example = torch.rand(1).unsqueeze(0).unsqueeze(0).to(device)
 
 traced_script_module = torch.jit.trace(model, (example, hn))
 traced_script_module.save("model/ugrp_rnn_model.pt")
+# import torch
+# import torchvision
+
+# # 모델 인스턴스 생성
+# model = torchvision.models.resnet18()
+
+# # 일반적으로 모델의 forward() 메소드에 넘겨주는 입력값
+# example = torch.rand(1, 3, 224, 224)
+
+# # torch.jit.trace를 사용하여 트레이싱을 이용해 torch.jit.ScriptModule 생성
+# traced_script_module = torch.jit.trace(model, example)
+# traced_script_module.save("model/traced_resnet_model.pt")
