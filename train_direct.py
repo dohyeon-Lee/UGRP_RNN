@@ -18,13 +18,14 @@ from data_loader import data_loader
 from torch.utils.tensorboard import SummaryWriter
 writer = SummaryWriter()
 
-device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+# device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+device = torch.device('cpu')
 print(f'{device} is available')
 
 
 ## parameters, dataset
 
-database = data_loader(num_epochs=200, device=device)
+database = data_loader(num_epochs=10, device=device) #200 
 
 ## models
 input_size = 1 
