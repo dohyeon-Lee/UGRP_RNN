@@ -7,23 +7,44 @@ from scipy.integrate import solve_ivp
 
 
 #가속도 u(t)
-global_h = 0
-def u(t):
-    global global_h
-    time = np.random.randn()
-    if (time > 1.5):
-        global_h = 10*np.random.rand()-5
+# global_h = 0
+# def u(t):
+#     global global_h
+#     time = np.random.randn()
+#     if (time > 1.5):
+#         global_h = 10*np.random.rand()-5
     
-    a = global_h + 0.5*np.random.randn()
+#     a = global_h + 0.5*np.random.randn()
 
-    # if t>0 and t < 0.5:
-    #     return 15
-    # elif t >= 0.5  and t < 1:
-    #     return -35
-    # else:
-    #     return -35
+#     # if t>0 and t < 0.5:
+#     #     return 15
+#     # elif t >= 0.5  and t < 1:
+#     #     return -35
+#     # else:
+#     #     return -35
 
-    return a*0.5
+#     return a*0.5
+global_h = 0
+jump_duration = 0
+
+def u(t):
+    global global_h, jump_duration
+    time = np.random.randn()
+
+    if jump_duration > 0: # maintain amplitude during duration & reduce jump_duration
+        jump_duration -= 1
+        a = global_h + 0.5 * np.random.randn()
+    else:
+        if time > 1.5: # probability related parameter, (The larger the value, the lower the probability)
+            global_h = 10 * np.random.rand() - 5
+            jump_duration = np.random.randint(100, 200) # duration related parameter, (The larger the value, the longer the duration)
+            a = global_h + 0.5 * np.random.randn()
+        else: # otherwise, just 0
+            global_h = 0
+            a = 0
+    
+    return a * 0.5
+
 
 
 # Y : [ x, x_dot, theta, theta_dot]
@@ -107,7 +128,7 @@ if __name__=="__main__":
         df['theta'] =sol.y[2,1:timelength*Hz-1]
         df['theta_dot'] = sol.y[3,1:timelength*Hz-1]
         if args.mode == "train":
-            df.to_csv("../train/train_real"+str(j)+".csv", index = False)
+            df.to_csv("../mk/afterafterafter"+str(j)+".csv", index = False)
         else:
-            df.to_csv("../test/test_real"+str(j)+".csv", index = False)
+            df.to_csv("../mk/afterafterafter"+str(j)+".csv", index = False)
 
