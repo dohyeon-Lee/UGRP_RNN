@@ -16,7 +16,8 @@ import random
 from VanillaRNN import VanillaRNN
 from data_loader import data_loader
 
-device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+# device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+device = torch.device('cpu')
 print(f'{device} is available')
 
 database = data_loader(num_epochs=200, device=device)

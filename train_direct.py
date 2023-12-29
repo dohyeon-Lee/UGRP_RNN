@@ -25,7 +25,7 @@ print(f'{device} is available')
 
 ## parameters, dataset
 
-database = data_loader(num_epochs=10, device=device) #200 
+database = data_loader(num_epochs=200, device=device) #200 
 
 ## models
 input_size = 1 
@@ -121,7 +121,7 @@ plt.plot(loss_graph)
 plt.show()
 
 ## model weight save
-PATH = "weight/train_direct_dict_real_batch_"+str(database.batch_size)+"_epoch_"+str(num_epochs)+"_loss123.pt"
+PATH = "weight/trace_direct_dict_real_batch_"+str(database.batch_size)+"_epoch_"+str(num_epochs)+"_loss123.pt"
 torch.save(model.state_dict(), PATH)
 
 hn = torch.rand(num_layers, 1, hidden_size).to(device)
