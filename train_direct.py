@@ -25,7 +25,7 @@ print(f'{device} is available')
 
 ## parameters, dataset
 
-database = data_loader(num_epochs=200, device=device) #200 
+database = data_loader(num_epochs=20, device=device) #200 
 
 ## models
 input_size = 1 
@@ -128,7 +128,7 @@ hn = torch.rand(num_layers, 1, hidden_size).to(device)
 example = torch.rand(1).unsqueeze(0).unsqueeze(0).to(device)
 
 traced_script_module = torch.jit.trace(model, (example, hn))
-traced_script_module.save("model/ugrp_traced_model.pt")
+traced_script_module.save("model/ugrp_traced_model20.pt")
 
 
 
