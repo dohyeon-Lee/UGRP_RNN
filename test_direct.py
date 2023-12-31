@@ -16,8 +16,8 @@ import random
 from VanillaRNN import VanillaRNN
 from data_loader import data_loader
 
-# device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
-device = torch.device('cpu')
+device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+# device = torch.device('cpu')
 print(f'{device} is available')
 
 database = data_loader(num_epochs=200, device=device)
@@ -33,7 +33,7 @@ model = VanillaRNN(input_size=input_size,
                    device=device).to(device)
 
 # PATH = "weight/trace_direct_dict_real_batch_"+str(database.batch_size)+"_epoch_"+str(database.num_epochs)+"_loss123.pt"
-PATH = "model/ugrp_traced_model20.pt"
+PATH = "model/ugrp_traced_model_loss13_300_.pt"
 # model.load_state_dict(torch.load(PATH))
 model = torch.load(PATH)
 model.eval()
@@ -50,6 +50,7 @@ def plotting(model, test_loader):
       seq_batch, target_batch = data
       
       for seq in seq_batch:
+        # input_ = torch.zeros(1, 1, 1).to(device) ## TODO check
         out, hn = model(seq.unsqueeze(0), hn)
         theta.extend(out[:,:,0].view([-1,]).cpu().numpy().tolist())
         theta_dot.extend(out[:,:,1].view([-1,]).cpu().numpy().tolist())           

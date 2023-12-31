@@ -17,7 +17,7 @@ from VanillaRNN import VanillaRNN
 from data_loader import data_loader
 from torch.utils.tensorboard import SummaryWriter
 writer = SummaryWriter()
-
+# device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 device = torch.device('cpu')
 print(f'{device} is available')
 
@@ -38,7 +38,6 @@ model = VanillaRNN(input_size=input_size,
 
 hn = torch.rand(num_layers, 1, hidden_size).to(device)
 example = torch.rand(1).unsqueeze(0).unsqueeze(0).to(device)
-
 traced_script_module = torch.jit.trace(model, (example, hn))
 traced_script_module.save("model/ugrp_rnn_model.pt")
 # import torch

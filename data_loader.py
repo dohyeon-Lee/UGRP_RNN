@@ -35,10 +35,8 @@ class data_loader():
         filename = "train/train_real0.csv"
         traindata = pd.read_csv(filename)
         train_full_data = traindata.values
-    
-        self.train_input_seq = train_full_data[:,1] # delete last data
-        self.train_output_seq = train_full_data[:,1:3] # delete first data
-
+        self.train_input_seq = train_full_data[:,0]   
+        self.train_output_seq = train_full_data[:,1:3]    
         self.train_input_seq, self.train_output_seq = self.seq_data(self.train_input_seq, self.train_output_seq, self.sequence_length)
         self.train_input_seq = self.train_input_seq.unsqueeze(-1)
         train = torch.utils.data.TensorDataset(self.train_input_seq, self.train_output_seq)
@@ -47,11 +45,11 @@ class data_loader():
     
         #make test dataset
 
-        filename = "test/test_real_LQR_0.csv"
+        filename = "train/train_real0.csv" # "mk/afterafterafter0.csv"
         testdata = pd.read_csv(filename)
         test_full_data = testdata.values
 
-        self.test_input_seq = test_full_data[:,1] # delete last data
+        self.test_input_seq = test_full_data[:,0]   
         self.test_output_seq = test_full_data[:,1:3]
         
         self.test_input_seq = torch.FloatTensor(self.test_input_seq).to(self.device).unsqueeze(-1).unsqueeze(1)
