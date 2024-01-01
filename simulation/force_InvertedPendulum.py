@@ -32,18 +32,18 @@ def u(t):
     time = np.random.randn()
 
     if jump_duration > 0: # maintain amplitude during duration & reduce jump_duration
-        jump_duration -= 1
+        jump_duration = jump_duration - 1
         a = global_h + 0.5 * np.random.randn()
     else:
-        if time > 1.5: # probability related parameter, (The larger the value, the lower the probability)
+        if time > 2.5: # 1.5 # probability related parameter, (The larger the value, the lower the probability)
             global_h = 10 * np.random.rand() - 5
-            jump_duration = np.random.randint(100, 200) # duration related parameter, (The larger the value, the longer the duration)
+            jump_duration = np.random.randint(900, 1000) # 100,200 # duration related parameter, (The larger the value, the longer the duration)
             a = global_h + 0.5 * np.random.randn()
         else: # otherwise, just 0
             global_h = 0
             a = 0
     
-    return a * 0.5
+    return a * 0.3
 
 
 
@@ -99,7 +99,7 @@ if __name__=="__main__":
     for j in range(0,data):
         rand_x_dot = 0 #np.random.uniform(-0.5,0.5)
         rand_theta = -np.pi/2 #np.random.uniform(0,np.pi)
-        rand_theta_dot = np.random.uniform(-0.5,0.5)
+        rand_theta_dot = 0 #np.random.uniform(-0.5,0.5)
         sol = solve_ivp(func3, [0, timelength], [0, rand_x_dot, rand_theta, rand_theta_dot],  t_eval=np.linspace( 0, timelength, timelength*Hz)  )
 
         syst = InvertedPendulum()
@@ -128,7 +128,7 @@ if __name__=="__main__":
         df['theta'] =sol.y[2,1:timelength*Hz-1]
         df['theta_dot'] = sol.y[3,1:timelength*Hz-1]
         if args.mode == "train":
-            df.to_csv("../mk/afterafterafter"+str(j)+".csv", index = False)
+            df.to_csv("../mk/train/train"+str(j)+".csv", index = False)
         else:
-            df.to_csv("../mk/afterafterafter"+str(j)+".csv", index = False)
+            df.to_csv("../mk/test/test_exp"+str(j)+".csv", index = False)
 

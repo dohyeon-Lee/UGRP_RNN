@@ -13,7 +13,8 @@ import matplotlib.cm as cm
 import cv2
 from tqdm import tqdm
 import random
-from VanillaRNN import VanillaRNN
+#from VanillaRNN import VanillaRNN
+from LSTM import LSTM
 from data_loader import data_loader
 from torch.utils.tensorboard import SummaryWriter
 
@@ -37,7 +38,7 @@ database = data_loader(num_epochs=200, device=device) #200
 input_size = 1 
 num_layers = 2
 hidden_size = 8
-model = VanillaRNN(input_size=input_size,
+model = LSTM(input_size=input_size,
                    hidden_size=hidden_size,
                    num_layers=num_layers,
                    device=device).to(device)
@@ -60,7 +61,8 @@ for epoch in range(num_epochs):
         seq_batch, target_batch = data 
         target_batch[:,:,0] += np.pi/2
         h0 = torch.zeros(num_layers, seq_batch.size()[0], hidden_size).to(device) # 초기 hidden state 설정하기.
-        out, _ = model(seq_batch, h0)
+        c0 = torch.zeros(num_layers, seq_batch.size()[0], hidden_size).to(device) # 초기 hidden state 설정하기.
+        out, _ = model(seq_batch, (h0,c0))
         loss1 = criterion(out, target_batch)
         if MODE == 2 or MODE == 3:
         # loss 2 calculate (use only 0th batch)
@@ -136,14 +138,15 @@ plt.show()
 
 ## model weight save
 if MODE == 1:
-    PATH = "weight/trace_direct_dict_real_batch_"+str(database.batch_size)+"_epoch_"+str(num_epochs)+"_loss1.pt"
+    PATH = "weight/LSTM_trace_direct_dict_real_batch_"+str(database.batch_size)+"_epoch_"+str(num_epochs)+"_loss1.pt"
 elif MODE == 2:
-    PATH = "weight/trace_direct_dict_real_batch_"+str(database.batch_size)+"_epoch_"+str(num_epochs)+"_loss12.pt"
+    PATH = "weight/LSTM_trace_direct_dict_real_batch_"+str(database.batch_size)+"_epoch_"+str(num_epochs)+"_loss12.pt"
 elif MODE == 3:
-    PATH = "weight/trace_direct_dict_real_batch_"+str(database.batch_size)+"_epoch_"+str(num_epochs)+"_loss123.pt"
+    PATH = "weight/LSTM_trace_direct_dict_real_batch_"+str(database.batch_size)+"_epoch_"+str(num_epochs)+"_loss123.pt"
 torch.save(model.state_dict(), PATH)
 
 hn = torch.rand(num_layers, 1, hidden_size).to(device)
+cn = torch.rand(num_layers, 1, hidden_size).to(device)
 example = torch.rand(1).unsqueeze(0).unsqueeze(0).to(device)
 
 if CPU == 1:
@@ -151,13 +154,13 @@ if CPU == 1:
 else:
     cpugpu = "_gpu"
 
-traced_script_module = torch.jit.trace(model, (example, hn))
+traced_script_module = torch.jit.trace(model, (example, (hn,cn)))
 if MODE == 1:
-    traced_script_module.save("model/ugrp_traced_model_loss1_"+str(num_epochs)+cpugpu+"__dataset3.pt")
+    traced_script_module.save("model/LSTM_ugrp_traced_model_loss1_"+str(num_epochs)+cpugpu+"__dataset3.pt")
 elif MODE == 2:
-    traced_script_module.save("model/ugrp_traced_model_loss12_"+str(num_epochs)+cpugpu+"_.pt")
+    traced_script_module.save("model/LSTM_ugrp_traced_model_loss12_"+str(num_epochs)+cpugpu+"_.pt")
 elif MODE == 3:
-    traced_script_module.save("model/ugrp_traced_model_loss123_"+str(num_epochs)+cpugpu+"_dataset4_seq500.pt")
+    traced_script_module.save("model/LSTM_ugrp_traced_model_loss123_"+str(num_epochs)+cpugpu+"_dataset4_seq500.pt")
 
 
 
