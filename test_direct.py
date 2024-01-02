@@ -37,7 +37,7 @@ model = VanillaRNN(input_size=input_size,
                    device=device).to(device)
 
 # PATH = "weight/trace_direct_dict_real_batch_"+str(database.batch_size)+"_epoch_"+str(database.num_epochs)+"_loss123.pt"
-PATH = "model/ugrp_traced_model_loss123_200_gpu_dataset4_seq10.pt"
+PATH = "traced_test/filled_model.pt" #"model/ugrp_traced_model_loss123_200_gpu_dataset4_seq1000.pt"
 # model.load_state_dict(torch.load(PATH))
 model = torch.load(PATH)
 model.eval()

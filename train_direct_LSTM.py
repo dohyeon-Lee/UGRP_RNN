@@ -160,7 +160,7 @@ if MODE == 1:
 elif MODE == 2:
     traced_script_module.save("model/LSTM_ugrp_traced_model_loss12_"+str(num_epochs)+cpugpu+"_.pt")
 elif MODE == 3:
-    traced_script_module.save("model/LSTM_ugrp_traced_model_loss123_"+str(num_epochs)+cpugpu+"_dataset4_seq500.pt")
+    traced_script_module.save("model/LSTM_ugrp_traced_model_loss123_"+str(num_epochs)+cpugpu+"_dataset4_seq1000.pt")
 
 
 

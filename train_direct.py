@@ -46,6 +46,7 @@ criterion = nn.MSELoss()
 ## training
 lr = 1e-3
 num_epochs = database.num_epochs
+sequence_length = database.sequence_length
 optimizer = optim.Adam(model.parameters(), lr=lr)
 loss_graph = [] # 그래프 그릴 목적인 loss.
 n = len(database.train_loader)
@@ -134,14 +135,7 @@ plt.figure()
 plt.plot(loss_graph)
 plt.show()
 
-## model weight save
-if MODE == 1:
-    PATH = "weight/trace_direct_dict_real_batch_"+str(database.batch_size)+"_epoch_"+str(num_epochs)+"_loss1.pt"
-elif MODE == 2:
-    PATH = "weight/trace_direct_dict_real_batch_"+str(database.batch_size)+"_epoch_"+str(num_epochs)+"_loss12.pt"
-elif MODE == 3:
-    PATH = "weight/trace_direct_dict_real_batch_"+str(database.batch_size)+"_epoch_"+str(num_epochs)+"_loss123.pt"
-torch.save(model.state_dict(), PATH)
+
 
 hn = torch.rand(num_layers, 1, hidden_size).to(device)
 example = torch.rand(1).unsqueeze(0).unsqueeze(0).to(device)
@@ -151,13 +145,17 @@ if CPU == 1:
 else:
     cpugpu = "_gpu"
 
-traced_script_module = torch.jit.trace(model, (example, hn))
+## model weight save
 if MODE == 1:
-    traced_script_module.save("model/ugrp_traced_model_loss1_"+str(num_epochs)+cpugpu+"__dataset3.pt")
+    PATH = "traced_model_loss1_epoch"+str(num_epochs)+cpugpu+"_.pt"
 elif MODE == 2:
-    traced_script_module.save("model/ugrp_traced_model_loss12_"+str(num_epochs)+cpugpu+"_.pt")
+    PATH = "traced_model_loss12_epoch"+str(num_epochs)+cpugpu+"_.pt"
 elif MODE == 3:
-    traced_script_module.save("model/ugrp_traced_model_loss123_"+str(num_epochs)+cpugpu+"_dataset4_seq500.pt")
+    PATH = "traced_model_loss123_epoch"+str(num_epochs)+cpugpu+"_dataset7_seq"+str(sequence_length)+".pt"
+torch.save(model.state_dict(), "weight/"+PATH)
+
+traced_script_module = torch.jit.trace(model, (example, hn))
+traced_script_module.save("model/"+PATH)
 
 
 
