@@ -17,7 +17,7 @@ from VanillaRNN import VanillaRNN
 from data_loader import data_loader
 
 CPU = 0
-
+Hz = 50
 if CPU == 1:
     device = torch.device('cpu')
 else:
@@ -37,13 +37,18 @@ model = VanillaRNN(input_size=input_size,
                    device=device).to(device)
 
 # PATH = "weight/trace_direct_dict_real_batch_"+str(database.batch_size)+"_epoch_"+str(database.num_epochs)+"_loss123.pt"
-PATH = "traced_test/filled_model.pt" #"model/ugrp_traced_model_loss123_200_gpu_dataset4_seq1000.pt"
+PATH = "model/traced_model_loss123_epoch200_gpu_dataset5_seq1000.pt"
 # model.load_state_dict(torch.load(PATH))
 model = torch.load(PATH)
 model.eval()
 
-def plotting(model, test_loader):
+def lpf(x_k,  y_km1, Ts, tau) :
+  y_k = (tau * y_km1 + Ts * x_k) / (Ts + tau)
+  return y_k
+   
 
+def plotting(model, test_loader):
+  
   with torch.no_grad():
     theta = []
     theta_dot = []
@@ -66,25 +71,43 @@ def plotting(model, test_loader):
   print(len(target_theta))
   for i in range(0,len(target_theta)):
     target_theta[i] += np.pi/2 
+  
+  f_cut = 2 #0.5
+  tau = 1/(2*np.pi*f_cut)
+  filtered_theta = []
+  before_lpf_theta = 0
+  filtered_thetadot = []
+  before_lpf_thetadot = 0
+  for i in range(0, len(theta)):
+    lpf_theta = lpf(theta[i], before_lpf_theta, 1/Hz, tau)
+    before_lpf_theta = lpf_theta
+    filtered_theta.append(lpf_theta)
 
-  
-  
-  plt.figure(figsize=(20,5))
+  for i in range(0, len(theta_dot)):
+    lpf_thetadot = lpf(theta_dot[i], before_lpf_thetadot, 1/Hz, tau)
+    before_lpf_thetadot = lpf_thetadot
+    filtered_thetadot.append(lpf_thetadot)
+
+  plt.subplots(constrained_layout=True)
+  plt.subplot(211)
   plt.plot(time[:len(target_theta)], target_theta, '--') #theta
   plt.plot(time[:len(theta)],theta , 'b', linewidth=0.6)
-  plt.legend([r'$\theta$',r'$\hat{\theta}$'])
+  plt.plot(time[:len(filtered_theta)],filtered_theta , 'g', linewidth=0.6)
+  plt.title(r'$\theta$')
+  plt.legend([r'$\theta$',r'$\hat{\theta}$', r'$\hat{\theta}_{lpf}$'])
   plt.xlabel('t(s)')
   plt.ylabel(r'$\theta$')
   plt.grid(True)
 
-  plt.figure(figsize=(20,5))
+  plt.subplot(212)
   plt.plot(time[:len(target_theta_dot)],target_theta_dot,'r' '--') #theta_dot  
   plt.plot(time[:len(theta_dot)], theta_dot, 'r', linewidth=0.6)
-  plt.grid(True)
-
-  plt.legend([r'$\dot{\theta}$', r'$\hat{\dot{\theta}}$'])
+  plt.plot(time[:len(filtered_thetadot)],filtered_thetadot , 'g', linewidth=0.6)
+  plt.title(r'$\dot{\theta}$')
+  plt.legend([r'$\dot{\theta}$', r'$\hat{\dot{\theta}}$', r'$\hat{\dot{\theta}}_{lpf}$'])
   plt.xlabel('t(s)')
   plt.ylabel(r'$\dot{\theta}$')
+  plt.grid(True)
   plt.show()
-
+  
 plotting(model, database.test_loader)

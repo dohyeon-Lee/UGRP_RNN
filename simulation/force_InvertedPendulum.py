@@ -50,32 +50,29 @@ global_h = 0
 decide_waveform = 0
 decide_wave_w = 0.0
 jump_duration = 0
-
+f = 0.5
 def u(t):
     global global_h, jump_duration, decide_waveform
     time = np.random.randn()
-    f = 1
-    a = 3*np.sin(2*np.pi*f*t)
-    # if jump_duration > 0: # maintain amplitude during duration & reduce jump_duration
-    #     jump_duration = jump_duration - 1
-    #     if decide_waveform == 0:
-    #         a = global_h * np.sin(t)
-    #     else:
-    #         a = global_h + 0.5 * np.random.randn()
-    # else:
-    #     if time > 4: # 1.5 # probability related parameter, (The larger the value, the lower the probability)
-    #         decide_waveform = np.random.randint(0,2)
-    #         global_h = 10 * np.random.rand() - 5
-    #         if decide_waveform == 0:
-    #             jump_duration = np.random.randint(500, 800) # 100,200 # duration related parameter, (The larger the value, the longer the duration)
-    #             decide_wave_w = np.random.randint()
-    #             a = global_h * np.sin(t)
-    #         else:
-    #             jump_duration = np.random.randint(900, 1000) # 100,200 # duration related parameter, (The larger the value, the longer the duration)
-    #             a = global_h + 0.5 * np.random.randn()
-    #     else: # otherwise, just 0
-    #         global_h = 0
-    #         a = 0
+    if jump_duration > 0: # maintain amplitude during duration & reduce jump_duration
+        jump_duration = jump_duration - 1
+        if decide_waveform == 0:
+            a = global_h * np.sin(2*np.pi*f*t)
+        else:
+            a = global_h + 0.5 * np.random.randn()
+    else:
+        if time > 2.5: # 1.5 # probability related parameter, (The larger the value, the lower the probability)
+            decide_waveform = np.random.randint(0,2)
+            global_h = 10 * np.random.rand() - 5
+            if decide_waveform == 0:
+                jump_duration = np.random.randint(60, 100) # 100,200 # duration related parameter, (The larger the value, the longer the duration)
+                a = global_h * np.sin(2*np.pi*f*t)
+            else:
+                jump_duration = np.random.randint(900, 1000) # 100,200 # duration related parameter, (The larger the value, the longer the duration)
+                a = global_h + 0.5 * np.random.randn()
+        else: # otherwise, just 0
+            global_h = 0
+            a = 0
     
     return a * 0.5
 
@@ -161,7 +158,7 @@ if __name__=="__main__":
         df['theta'] =sol.y[2,1:timelength*Hz-1]
         df['theta_dot'] = sol.y[3,1:timelength*Hz-1]
         if args.mode == "train":
-            df.to_csv("../mk/train/train_dataset8_"+str(j)+".csv", index = False)
+            df.to_csv("../mk/train/train_dataset7_Hz"+str(Hz)+"_1"+str(j)+".csv", index = False)
         else:
-            df.to_csv("../test/test_dataset7_"+str(j)+".csv", index = False)
+            df.to_csv("../test/test_dataset9_"+str(j)+".csv", index = False)
 

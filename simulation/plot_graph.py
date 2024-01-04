@@ -2,7 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 
-file_path = "../mk/train/train_dataset7_0.csv"#"../train/train_real0.csv"#"../test/test_real_LQR_1.csv"
+file_path = "../mk/train/train_dataset7_Hz100_10.csv"#"../train/train_real0.csv"#"../test/test_real_LQR_1.csv"
 
 data = pd.read_csv(file_path)
 

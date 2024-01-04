@@ -20,6 +20,7 @@ from torch.utils.tensorboard import SummaryWriter
 
 MODE = 3
 CPU = 0
+Hz = 100
 
 writer = SummaryWriter()
 if CPU == 1:
@@ -65,7 +66,7 @@ for epoch in range(num_epochs):
         loss1 = criterion(out, target_batch)
         if MODE == 2 or MODE == 3:
         # loss 2 calculate (use only 0th batch)
-            dt = 600/30000.
+            dt = 1/Hz #600/30000.
             expected_theta_dot = torch.zeros(out.shape[1]).to(device)
             bbefore_theta = 0
             before_theta = 0
@@ -151,7 +152,7 @@ if MODE == 1:
 elif MODE == 2:
     PATH = "traced_model_loss12_epoch"+str(num_epochs)+cpugpu+"_.pt"
 elif MODE == 3:
-    PATH = "traced_model_loss123_epoch"+str(num_epochs)+cpugpu+"_dataset7_seq"+str(sequence_length)+".pt"
+    PATH = "traced_model_loss123_epoch"+str(num_epochs)+cpugpu+"_dataset7_seq"+str(sequence_length)+"_Hz_"+str(Hz)+".pt"
 torch.save(model.state_dict(), "weight/"+PATH)
 
 traced_script_module = torch.jit.trace(model, (example, hn))
