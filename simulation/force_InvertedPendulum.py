@@ -160,5 +160,5 @@ if __name__=="__main__":
         if args.mode == "train":
             df.to_csv("../mk/train/train_dataset7_Hz"+str(Hz)+"_1"+str(j)+".csv", index = False)
         else:
-            df.to_csv("../test/test_dataset9_"+str(j)+".csv", index = False)
+            df.to_csv("../test/test_dataset4_100Hz_"+str(j)+".csv", index = False)
 
