@@ -22,7 +22,7 @@ class data_loader():
     def __init__(self, num_epochs=100, device=device):
         self.device = device
         
-        self.sequence_length = 1600 #2000 for 100Hz # 1000 for 50hz
+        self.sequence_length = 500 #1600 #2000 for 100Hz # 1000 for 50hz
         self.batch_size = 20
         self.num_epochs = num_epochs
         
@@ -32,7 +32,7 @@ class data_loader():
 
         # make train dataset
     
-        filename = "mk/train/train_dataset4_Hz80.csv" #"train/train_real0.csv"
+        filename = "mk/train/train_withcontrol_Hz50.csv" #"train/train_real0.csv"
         traindata = pd.read_csv(filename)
         train_full_data = traindata.values
         self.train_input_seq = train_full_data[:,0]   
