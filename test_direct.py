@@ -17,7 +17,7 @@ from VanillaRNN import VanillaRNN
 from data_loader import data_loader
 
 CPU = 0
-Hz = 100
+Hz = 80
 if CPU == 1:
     device = torch.device('cpu')
 else:
@@ -37,7 +37,7 @@ model = VanillaRNN(input_size=input_size,
                    device=device).to(device)
 
 # PATH = "weight/trace_direct_dict_real_batch_"+str(database.batch_size)+"_epoch_"+str(database.num_epochs)+"_loss123.pt"
-PATH = "model/traced_model_loss123_epoch200_gpu_dataset4_seq2000_Hz_100.pt"
+PATH = "model/traced_model_loss123_epoch200_gpu_dataset4_seq1600_Hz_80.pt"
 # model.load_state_dict(torch.load(PATH))
 model = torch.load(PATH)
 model.eval()
@@ -72,7 +72,7 @@ def plotting(model, test_loader):
   for i in range(0,len(target_theta)):
     target_theta[i] += np.pi/2 
   
-  f_cut = 2 #0.5
+  f_cut = 10 #0.5
   tau = 1/(2*np.pi*f_cut)
   filtered_theta = []
   before_lpf_theta = 0

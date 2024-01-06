@@ -18,9 +18,9 @@ from data_loader import data_loader
 from torch.utils.tensorboard import SummaryWriter
 
 
-MODE = 1
+MODE = 3
 CPU = 0
-Hz = 100
+Hz = 80
 
 writer = SummaryWriter()
 if CPU == 1:
