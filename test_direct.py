@@ -17,7 +17,7 @@ from VanillaRNN import VanillaRNN
 from data_loader import data_loader
 
 CPU = 0
-Hz = 80
+Hz = 50
 if CPU == 1:
     device = torch.device('cpu')
 else:
@@ -37,7 +37,7 @@ model = VanillaRNN(input_size=input_size,
                    device=device).to(device)
 
 # PATH = "weight/trace_direct_dict_real_batch_"+str(database.batch_size)+"_epoch_"+str(database.num_epochs)+"_loss123.pt"
-PATH = "model/traced_model_loss123_epoch200_gpu_dataset4_seq1600_Hz_80.pt"
+PATH = "model/traced_model_loss123_epoch200_gpu_withcontrol_seq1000_Hz_50.pt"
 # model.load_state_dict(torch.load(PATH))
 model = torch.load(PATH)
 model.eval()

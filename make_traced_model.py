@@ -43,9 +43,9 @@ criterion = nn.MSELoss()
 hn = torch.rand(num_layers, 1, hidden_size).to(device)
 example = torch.rand(1).unsqueeze(0).unsqueeze(0).to(device)
 
-PATH = "extracted_model/model_dataset4_80Hz.pt"
+PATH = "extracted_model/model_withcontrol_50Hz.pt"
 
-weight_path = "weight/traced_model_loss123_epoch200_gpu_dataset4_seq1600_Hz_80.pt"
+weight_path = "weight/traced_model_loss123_epoch200_gpu_withcontrol_seq1000_Hz_50.pt"
 
 model.load_state_dict(torch.load(weight_path))
 traced_script_module = torch.jit.trace(model, (example, hn))

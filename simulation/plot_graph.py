@@ -2,7 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 
-file_path = "../test/test_withcontrol_Hz50_2.csv"#"../mk/train/train_withcontrol_Hz50_0.csv" #"../train/train_real0.csv"#"../test/test_real_LQR_1.csv"
+file_path = "../mk/train/train_withcontrol3_Hz50.csv" #"../test/test_withcontrol3_Hz50_0.csv" #""../test/test_withcontrol_Hz50_2.csv" #"../train/train_real0.csv"#"../test/test_real_LQR_1.csv"
 
 data = pd.read_csv(file_path)
 plt.figure(figsize=(20, 20))

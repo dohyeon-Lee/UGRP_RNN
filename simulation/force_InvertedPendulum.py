@@ -26,16 +26,16 @@ def u(t):
                 global_h = 0.5
             if global_h < 0 and global_h > -0.5:
                 global_h = -0.5
-            jump_duration = t + 0.01 + 0.1*np.random.rand() # 900,1000 # duration related parameter, (The larger the value, the longer the duration)
+            jump_duration = t + 0.001 + 0.1*np.random.rand() # 900,1000 # duration related parameter, (The larger the value, the longer the duration)
             a = global_h + 0.5 * np.random.randn()
         else: # otherwise, just 0
             global_h = 0
             a = 0
            
     
-    return a *0.7
+    return a *0.2
 
-choice = 0
+choice = 1
 zero_dist = 0
 state = 0
 duration = 5
@@ -49,7 +49,7 @@ def func3( t, y):
     if(t >= duration):
         duration = 4 + t
         zero_dist = y[0]
-        choice = np.random.randint(0,3) # 0,1,2,3
+        choice = np.random.randint(0,10) # 0,1,2,3
     if(choice >= 1):
         state = 0
         LQR_k = [10.0000, 11.3488, -4.3096, -0.2765]
@@ -143,7 +143,7 @@ if __name__=="__main__":
         df['theta'] =sol.y[2,1:timelength*Hz-1]
         df['theta_dot'] = sol.y[3,1:timelength*Hz-1]
         if args.mode == "train":
-            df.to_csv("../mk/train/train_withcontrol_Hz"+str(Hz)+"_"+str(j)+".csv", index = False)
+            df.to_csv("../mk/train/train_withcontrol3_Hz"+str(Hz)+"_"+str(j)+".csv", index = False)
         else:
-            df.to_csv("../test/test_withcontrol_Hz"+str(Hz)+"_"+"2"+".csv", index = False)
+            df.to_csv("../test/test_withcontrol3_Hz"+str(Hz)+"_"+"0"+".csv", index = False)
 
