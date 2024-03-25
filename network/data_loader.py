@@ -22,7 +22,7 @@ class data_loader():
     def __init__(self, num_epochs=100, device=device):
         self.device = device
         
-        self.sequence_length = 1000 #1600 #2000 for 100Hz # 1000 for 50hz
+        self.sequence_length = 1000 # 1000 for 50hz
         self.batch_size = 20
         self.num_epochs = num_epochs
         
@@ -73,7 +73,6 @@ if __name__=="__main__":
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
     print(f'{device} is available')
     database = data_loader(device)
-    # print(database.test_output_seq.shape)
     print(len(database.train_loader))
     for data in database.test_loader:
         seq, target = data
