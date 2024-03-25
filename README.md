@@ -19,6 +19,9 @@ pip install pyyaml
 ```
   
 # How to use
+## simulating & make dataset
+* simulation is actuate at ```simulation/force_InvertedPendulum.py```
+
 ## training
 * you can change parameter setting in ```setting.yaml```
 * run ```train.py``` in terminal
@@ -33,4 +36,8 @@ python test.py
 ```
 
 ## tracing
-* tracing pt file to use in libtorch (use in c++ environment in robot arm). run ```make_traced_model.py```. Extracted traced model is saved in ```extracted_model```.  
+* tracing pt file to use in libtorch (use in c++ environment in robot arm). run ```make_traced_model.py```. Extracted traced model is saved in ```extracted_model``` folder.
+
+```
+python make_traced_model.py
+```
