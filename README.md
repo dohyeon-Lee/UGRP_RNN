@@ -23,9 +23,9 @@ pip install pyyaml
 * you can change parameter setting in ```setting.yaml```
 * run train.py in terminal
 
-'''
+```
 pyhon train.py
-'''
+```
 
 ## testing
 ```
