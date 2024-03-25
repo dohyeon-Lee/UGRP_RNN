@@ -43,7 +43,7 @@ criterion = nn.MSELoss()
 hn = torch.rand(num_layers, 1, hidden_size).to(device)
 example = torch.rand(1).unsqueeze(0).unsqueeze(0).to(device)
 
-PATH = "extracted_model/model_withcontrol_50Hz.pt"
+PATH = "extracted_model/model_withcontrol5_50Hz.pt"
 
 weight_path = "weight/traced_model_loss123_epoch200_gpu_withcontrol_seq1000_Hz_50.pt"
 
