@@ -24,7 +24,7 @@ pip install pyyaml
 * run train.py in terminal
 
 ```
-pyhon train.py
+python train.py
 ```
 
 ## testing
