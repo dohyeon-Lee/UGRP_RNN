@@ -15,6 +15,7 @@ pip install matplotlib
 pip install opencv-python
 pip install tqdm
 pip install tensorboard
+pip install pyyaml
 ```
   
 # How to use
