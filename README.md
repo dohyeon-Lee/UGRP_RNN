@@ -17,3 +17,9 @@ pip install tqdm
 pip install tensorboard
 ```
   
+# How to use
+## training
+* python train.py
+
+## testing
+* python test.py
