@@ -15,5 +15,19 @@ pip install matplotlib
 pip install opencv-python
 pip install tqdm
 pip install tensorboard
+pip install pyyaml
 ```
   
+# How to use
+## training
+* you can change parameter setting in ```setting.yaml```
+* run train.py in terminal
+
+```
+python train.py
+```
+
+## testing
+```
+python test.py
+```
