@@ -1,13 +1,13 @@
 # environment
 In anaconda virtual environment
 
-* install pytorch appropriate for your environment
+* Install pytorch appropriate for your environment
 
 ```
 conda install pytorch torchvision torchaudio cpuonly -c pytorch
 ```
 
-* istall other package
+* Install other package
 
 ```
 pip install pandas
