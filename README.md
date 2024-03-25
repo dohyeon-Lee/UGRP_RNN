@@ -1,4 +1,4 @@
-# environment
+# Environment
 In anaconda virtual environment
 
 * Install pytorch appropriate for your environment
