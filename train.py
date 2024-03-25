@@ -50,7 +50,7 @@ lr = 1e-3
 num_epochs = database.num_epochs
 sequence_length = database.sequence_length
 optimizer = optim.Adam(model.parameters(), lr=lr)
-loss_graph = [] # 그래프 그릴 목적인 loss.
+loss_graph = [] # loss for draw graph
 n = len(database.train_loader)
 
 for epoch in range(num_epochs):
