@@ -18,7 +18,7 @@ from data_loader import data_loader
 from torch.utils.tensorboard import SummaryWriter
 
 
-MODE = 3
+MODE = 1
 CPU = 1
 Hz = 50
 
@@ -148,11 +148,11 @@ else:
 
 ## model weight save
 if MODE == 1:
-    PATH = "traced_model_loss1_epoch"+str(num_epochs)+cpugpu+"_withcontrol3_seq"+str(sequence_length)+"_Hz_"+str(Hz)+".pt"
+    PATH = "testtraced_model_loss1_epoch"+str(num_epochs)+cpugpu+"_withcontrol3_seq"+str(sequence_length)+"_Hz_"+str(Hz)+".pt"
 elif MODE == 2:
-    PATH = "traced_model_loss12_epoch"+str(num_epochs)+cpugpu+"_.pt"
+    PATH = "testtraced_model_loss12_epoch"+str(num_epochs)+cpugpu+"_.pt"
 elif MODE == 3:
-    PATH = "traced_model_loss123_epoch"+str(num_epochs)+cpugpu+"_withcontrol3_seq"+str(sequence_length)+"_Hz_"+str(Hz)+".pt"
+    PATH = "testtraced_model_loss123_epoch"+str(num_epochs)+cpugpu+"_withcontrol3_seq"+str(sequence_length)+"_Hz_"+str(Hz)+".pt"
 torch.save(model.state_dict(), "weight/"+PATH)
 
 traced_script_module = torch.jit.trace(model, (example, hn))

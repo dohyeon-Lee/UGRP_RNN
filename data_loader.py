@@ -32,7 +32,7 @@ class data_loader():
 
         # make train dataset
     
-        filename = "mk/train/train_withcontrol3_Hz50.csv" #"train/train_real0.csv"
+        filename = "train/train_withcontrol3_Hz50.csv" #"train/train_real0.csv"
         traindata = pd.read_csv(filename)
         train_full_data = traindata.values
         self.train_input_seq = train_full_data[:,0]   
