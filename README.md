@@ -31,3 +31,6 @@ python train.py
 ```
 python test.py
 ```
+
+## tracing
+* tracing pt file to use in libtorch (use in c++ environment in robot arm). run ```make_traced_model.py```. Extracted traced model is saved in ```extracted_model```.  
