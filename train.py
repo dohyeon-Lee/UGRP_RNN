@@ -1,6 +1,6 @@
 import os
 os.environ['KMP_DUPLICATE_LIB_OK']='True'
-
+import yaml
 import pandas as pd
 import torch
 import torch.nn as nn
@@ -18,13 +18,15 @@ from network.VanillaRNN import VanillaRNN
 from network.data_loader import data_loader
 from torch.utils.tensorboard import SummaryWriter
 
+with open('setting.yaml') as f:
+    param = yaml.full_load(f)
 
-MODE = 1
-CPU = 1
-Hz = 50
+MODE = param['PIRNN_mode']
+CPU = param['device']
+Hz = param['Hz']
 
 writer = SummaryWriter()
-if CPU == 1:
+if CPU == 'cpu':
     device = torch.device('cpu')
 else:
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
@@ -80,10 +82,10 @@ for epoch in range(num_epochs):
             loss2 = criterion(expected_theta_dot[1:-1], target_batch[0,1:-1,1])
         if MODE == 3:
             # loss 3 calculate (use only 0th batch)
-            g = 9.8 
-            L = 1./21.  
-            m = 1.0 
-            k = 0.58 # coefficients c/m
+            g = param['physics_param']['g']
+            L = param['physics_param']['L']  
+            m = param['physics_param']['m']
+            k = param['physics_param']['k'] # coefficients c/m
             x_ddot = seq_batch[0,:-1,0]
             true_theta_ddot = -k*target_batch[0,:-1,1]*torch.cos(target_batch[0,:-1,0])-(g/L)*torch.sin(target_batch[0,:-1,0])-(x_ddot/L)*torch.cos(target_batch[0,:-1,0])
             expected_theta_ddot = torch.zeros(out.shape[1]).to(device)
@@ -138,7 +140,7 @@ plt.show()
 hn = torch.rand(num_layers, 1, hidden_size).to(device)
 example = torch.rand(1).unsqueeze(0).unsqueeze(0).to(device)
 
-if CPU == 1:
+if CPU == 'cpu':
     cpugpu = "_cpu"
 else:
     cpugpu = "_gpu"

@@ -1,0 +1,9 @@
+device: cpu
+PIRNN_mode: 3
+Hz: 50
+
+physics_param:
+  g: 9.8
+  L: 0.047619
+  m: 1.0
+  k: 0.58
