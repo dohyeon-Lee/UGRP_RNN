@@ -20,7 +20,14 @@ pip install pyyaml
   
 # How to use
 ## training
-* python train.py
+* you can change parameter setting in ```setting.yaml```
+* run train.py in terminal
+
+'''
+pyhon train.py
+'''
 
 ## testing
-* python test.py
+```
+python test.py
+```
