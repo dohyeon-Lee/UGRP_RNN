@@ -23,7 +23,7 @@ pip install scipy
 ## simulation & make dataset
 * simulation is actuate at ```simulation/force_InvertedPendulum.py```
 
-### option
+#### option
 ```--mode``` : test or train
 
 ```--num``` : dataset num. default 1
@@ -34,7 +34,7 @@ pip install scipy
 
 ```--animation``` : True or False. visualization. default True
 
-## example
+#### example
 in simulation folder location,
 for make test dataset,
 
