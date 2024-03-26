@@ -1,5 +1,6 @@
 import os
 os.environ['KMP_DUPLICATE_LIB_OK']='True'
+import yaml
 import pandas as pd
 import torch
 import torch.nn as nn
@@ -17,13 +18,15 @@ from network.VanillaRNN import VanillaRNN
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 print(f'{device} is available')
 
+with open('setting.yaml') as f:
+    param = yaml.full_load(f)
 class data_loader():
     
     def __init__(self, num_epochs=100, device=device):
         self.device = device
         
-        self.sequence_length = 1000 # 1000 for 50hz
-        self.batch_size = 20
+        self.sequence_length = param['model_param']['sequence_length'] # 1000 for 50hz
+        self.batch_size = param['learning_param']['batch_size']
         self.num_epochs = num_epochs
         
         print("total_epochs: ",self.num_epochs)

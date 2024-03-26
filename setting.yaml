@@ -1,9 +1,27 @@
-device: cpu
-PIRNN_mode: 3
+device: cpu             # cuda:0 || cpu
+tracing_device: cpu     # cuda:0 || cpu
+PIRNN_mode: 3           # 1: use only data loss || 2: use data loss & loss2 || 3: use data loss (loss1) & loss2 & loss3
 Hz: 50
+
+learning_param:
+  epoch: 200
+  learning_rate: 0.001  #1e-3
+  batch_size: 20
+
+model_param:
+  sequence_length: 1000
+  input_size: 1
+  num_layer: 2
+  hidden_size: 8
 
 physics_param:
   g: 9.8
   L: 0.047619
   m: 1.0
   k: 0.58
+
+PIRNN_physics_param:
+  loss1_gain: 100       # data loss
+  loss2_gain: 0.01      # loss which compare theta differential and theta dot
+  loss3_gain: 0.001     # loss which compare theta dot differential and invertedpendulum dynamics
+

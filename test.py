@@ -1,5 +1,6 @@
 import os
 os.environ['KMP_DUPLICATE_LIB_OK']='True'
+import yaml
 import pandas as pd
 import torch
 import torch.nn as nn
@@ -13,32 +14,39 @@ import matplotlib.cm as cm
 import cv2
 from tqdm import tqdm
 import random
-from VanillaRNN import VanillaRNN
-from data_loader import data_loader
+from network.VanillaRNN import VanillaRNN
+from network.data_loader import data_loader
 
-CPU = 1
-Hz = 50
-if CPU == 1:
+# read yaml file
+with open('setting.yaml') as f:
+    param = yaml.full_load(f)
+
+CPU = param['device']
+Hz = param['Hz']
+if CPU == 'cpu':
     device = torch.device('cpu')
 else:
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 print(f'{device} is available')
 
-database = data_loader(num_epochs=200, device=device)
+database = data_loader(num_epochs=param['learning_param']['epoch'], device=device)
 
-## models
-input_size = 1
-num_layers = 2
-hidden_size = 8
-model = VanillaRNN(input_size=input_size,
-                   hidden_size=hidden_size,
+input_size = param['model_param']['input_size'] 
+num_layers = param['model_param']['num_layer']
+hidden_size = param['model_param']['hidden_size']
+
+## use with weight
+# model = VanillaRNN(input_size=input_size,
+#                    hidden_size=hidden_size,
                   
-                   num_layers=num_layers,
-                   device=device).to(device)
-
+#                    num_layers=num_layers,
+#                    device=device).to(device)
 # PATH = "weight/trace_direct_dict_real_batch_"+str(database.batch_size)+"_epoch_"+str(database.num_epochs)+"_loss123.pt"
-PATH = "model/traced_model_loss123_epoch200_cpu_withcontrol3_seq1000_Hz_50.pt"
 # model.load_state_dict(torch.load(PATH))
+# model.eval()
+
+## use with traced model
+PATH = "extracted_model/model_dataset4.pt"
 model = torch.load(PATH)
 model.eval()
 
@@ -59,7 +67,6 @@ def plotting(model, test_loader):
       seq_batch, target_batch = data
       
       for seq in seq_batch:
-        # input_ = torch.zeros(1, 1, 1).to(device) ## TODO check
         out, hn = model(seq.unsqueeze(0), hn)
         theta.extend(out[:,:,0].view([-1,]).cpu().numpy().tolist())
         theta_dot.extend(out[:,:,1].view([-1,]).cpu().numpy().tolist())           
