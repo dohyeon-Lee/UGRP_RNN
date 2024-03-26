@@ -25,7 +25,7 @@ pip install scipy
   * you can change ```physics_param```, ```simulate_param``` in ```setting.yaml``` file.
   *   ```physics_param``` 's parameters are about water-pendulum model's physics parameter such as mass, pendulum length, etc.
   *   ```simulate_param```'s parameters are about simulation dataset structure.
-      * ```update_term``` : Duration time. After that amount of time, determine the dataset type (only random dataset or adding LQR) again
+      * ```update_term``` : [s] Duration time. After that amount of time, determine the dataset type (only random dataset or adding LQR) again
       * ```non_control_percentage``` : [%] 100% (full non control dataset(random dataset)), 0% (full control dataset)
       * ```limit_acceleration``` : [m/s^2] if LQR output over this, use random output dataset only.
 
