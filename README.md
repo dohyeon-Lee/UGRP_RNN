@@ -22,6 +22,7 @@ pip install scipy
 # How to use
 ## simulation & make dataset
 * you can change parameter setting in ```setting.yaml```
+  * ds 
 * simulation is actuate at ```simulation/force_InvertedPendulum.py```
 
 #### option
