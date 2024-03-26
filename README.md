@@ -20,8 +20,33 @@ pip install scipy
 ```
   
 # How to use
-## simulating & make dataset
+## simulation & make dataset
 * simulation is actuate at ```simulation/force_InvertedPendulum.py```
+
+### option
+```--mode``` : test or train
+
+```--num``` : dataset num. default 1
+
+```--timelength``` : dataset's time length. if 120, dataset's length is 2 minute. default 600
+
+```--Hz``` : default 50
+
+```--animation``` : True or False. visualization. default True
+
+## example
+in simulation folder location,
+for make test dataset,
+
+```
+python force_InvertedPendulum.py --mode test --num 1 --timelength 100 --Hz 50 --animation False
+```
+
+for make train dataset,
+
+```
+python force_InvertedPendulum.py --mode train --num 1 --timelength 100 --Hz 50 --animation False
+```
 
 ## training
 * you can change parameter setting in ```setting.yaml```
