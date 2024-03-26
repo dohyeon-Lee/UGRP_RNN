@@ -48,6 +48,8 @@ for make train dataset,
 python force_InvertedPendulum.py --mode train --num 1 --timelength 100 --Hz 50 --animation False
 ```
 
+datasets are saved in ```train``` folder or '''test'''folder.
+
 ## training
 * you can change parameter setting in ```setting.yaml```
 * ```train.py``` also tracing .pt file to use in libtorch (use in c++ environment in robot arm). Extracted traced model is saved in ```extracted_model``` folder.
