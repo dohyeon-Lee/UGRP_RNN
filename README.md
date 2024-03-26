@@ -16,6 +16,7 @@ pip install opencv-python
 pip install tqdm
 pip install tensorboard
 pip install pyyaml
+pip install scipy
 ```
   
 # How to use
