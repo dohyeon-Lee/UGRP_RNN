@@ -72,6 +72,14 @@ datasets are saved in ```train``` folder or ```test``` folder.
 python train.py --dataset train/train_withcontrol3_Hz50.csv
 ```
 
+* If you want to check your learning situation in real time, open new terminal and
+
+  '''
+  tensorboard --logdir=runs
+  '''
+
+  while training. Go to the URL you provide or go to http://localhost:6006/.
+  
 ## testing
 * you can change parameter setting in ```setting.yaml```
   
