@@ -4,17 +4,18 @@ import pandas as pd
 import argparse
 from InvertedPendulum import InvertedPendulum
 from scipy.integrate import solve_ivp
+import yaml
+
+with open('../setting.yaml') as file:
+    param = yaml.full_load(file)
 
 global_h = 0
 decide_wave_w = 0.0
 jump_duration = 0
-f = 0.1
-hz = 50
-stop_count = 0
-
+hz = param['Hz']
 stop_time = 1
 def u(t):
-    global global_h, jump_duration, stop_time, stop_count
+    global global_h, jump_duration, stop_time
     
     if jump_duration > t: # maintain amplitude during duration & reduce jump_duration
         a = global_h + 0.5 * np.random.randn()
@@ -26,31 +27,29 @@ def u(t):
                 global_h = 0.5
             if global_h < 0 and global_h > -0.5:
                 global_h = -0.5
-            jump_duration = t + 0.001 + 0.1*np.random.rand() # 900,1000 # duration related parameter, (The larger the value, the longer the duration)
+            jump_duration = t + 0.001 + 0.1*np.random.rand() 
             a = global_h + 0.5 * np.random.randn()
         else: # otherwise, just 0
             global_h = 0
             a = 0
-           
-    
     return a *0.2
 
-choice = 1
+choice = 100
 zero_dist = 0
 state = 0
 duration = 5
 # Y : [ x, x_dot, theta, theta_dot]
 def func3( t, y):
     global duration, choice,state,zero_dist
-    g = 9.8 
-    L = 1./21.  
-    k = 0.58 # coefficients c/m
+    g = param['physics_param']['g']
+    L = param['physics_param']['L']
+    k = param['physics_param']['k'] # coefficients c/m
     LQR_u = 0
     if(t >= duration):
-        duration = 4 + t
+        duration = param['simulate_param']['update_term'] + t
         zero_dist = y[0]
-        choice = np.random.randint(0,10) # 0,1,2,3
-    if(choice >= 1):
+        choice = np.random.randint(0,100) # 0~99
+    if(choice >= param['simulate_param']['non_control_percentage']):
         state = 0
         LQR_k = [10.0000, 11.3488, -4.3096, -0.2765]
         LQR_state = np.array(y).reshape([4,1])
@@ -62,17 +61,16 @@ def func3( t, y):
         LQR_u = LQR_U.squeeze()
     else:
         state = 1
+    
     he = 1
-    if(state == 0):
-        
+    if(state == 0):    
         x_ddot = u(t) + LQR_u
-        if he == 1 and (x_ddot > 10 or x_ddot < -10):
+        # if control output is too high, then use only u(t)
+        if he == 1 and (x_ddot > param['simulate_param']['limit_acceleration'] or x_ddot < -param['simulate_param']['limit_acceleration']):
             he = 0
             x_ddot = u(t)
         else:
             x_ddot = u(t) + LQR_u
-            
-
     elif(state == 1):
         x_ddot = u(t)
 
@@ -90,10 +88,11 @@ if __name__=="__main__":
     )
     parser.add_argument("--mode", type=str, help="train or test",required=True)
     parser.add_argument("--num", type=int, help="num of dataset",required=False)
-    parser.add_argument("--timelength", type=int, help="time length",required=False)
-    parser.add_argument("--Hz", type=int, help="data hz",required=False)
+    parser.add_argument("--timelength", type=int, help="time length[s]",required=False)
+    parser.add_argument("--Hz", type=int, help="data [hz]",required=False)
     parser.add_argument("--animation", type=str, help="visualization, False or True",required=False)
     args = parser.parse_args()
+    
     if args.num == None:
         data = 1
     else:
@@ -116,7 +115,7 @@ if __name__=="__main__":
         rand_x_dot = 0 #np.random.uniform(-0.5,0.5)
         rand_theta = -np.pi/2 #np.random.uniform(0,np.pi)
         rand_theta_dot = 0 #np.random.uniform(-0.5,0.5)
-        sol = solve_ivp(func3, [0, timelength], [0, rand_x_dot, rand_theta, rand_theta_dot],  t_eval=np.linspace( 0, timelength, timelength*Hz)  )
+        sol = solve_ivp(func3, [0, timelength], [0, rand_x_dot, rand_theta, rand_theta_dot],  t_eval=np.linspace( 0, timelength, timelength*Hz))
 
         syst = InvertedPendulum()
         if animation == "True":
@@ -143,7 +142,7 @@ if __name__=="__main__":
         df['theta'] =sol.y[2,1:timelength*Hz-1]
         df['theta_dot'] = sol.y[3,1:timelength*Hz-1]
         if args.mode == "train":
-            df.to_csv("../mk/train/train_withcontrol3_Hz"+str(Hz)+"_"+str(j)+".csv", index = False)
+            df.to_csv("../train/train_controlData"+str(100-param['simulate_param']['non_control_percentage'])+"%_"+str(Hz)+"Hz_"+str(j)+".csv", index = False)
         else:
-            df.to_csv("../test/test_withcontrol3_Hz"+str(Hz)+"_"+"0"+".csv", index = False)
+            df.to_csv("../test/test_controlData"+str(100-param['simulate_param']['non_control_percentage'])+"%_"+str(Hz)+"Hz_"+str(j)+".csv", index = False)
 

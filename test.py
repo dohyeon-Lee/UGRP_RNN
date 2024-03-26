@@ -16,6 +16,15 @@ from tqdm import tqdm
 import random
 from network.VanillaRNN import VanillaRNN
 from network.data_loader import data_loader
+import argparse
+
+parser = argparse.ArgumentParser(
+    prog="test PIRNN",
+    description="test",
+    epilog="2023_UGRP"
+)
+parser.add_argument("--dataset", type=str, help="dataset file name",required=True)
+args = parser.parse_args()
 
 # read yaml file
 with open('setting.yaml') as f:
@@ -29,7 +38,7 @@ else:
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 print(f'{device} is available')
 
-database = data_loader(num_epochs=param['learning_param']['epoch'], device=device)
+database = data_loader(num_epochs=param['learning_param']['epoch'], device=device, dataset=args.dataset)
 
 input_size = param['model_param']['input_size'] 
 num_layers = param['model_param']['num_layer']

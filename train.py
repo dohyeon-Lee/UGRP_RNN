@@ -17,6 +17,15 @@ import random
 from network.VanillaRNN import VanillaRNN
 from network.data_loader import data_loader
 from torch.utils.tensorboard import SummaryWriter
+import argparse
+
+parser = argparse.ArgumentParser(
+    prog="training PIRNN",
+    description="training",
+    epilog="2023_UGRP"
+)
+parser.add_argument("--dataset", type=str, help="dataset file name",required=True)
+args = parser.parse_args()
 
 # read yaml file
 with open('setting.yaml') as f:
@@ -36,7 +45,7 @@ print(f'{device} is available')
 
 
 ## parameters, dataset
-database = data_loader(num_epochs=param['learning_param']['epoch'], device=device)  
+database = data_loader(num_epochs=param['learning_param']['epoch'], device=device, dataset=args.dataset)  
 
 ## models
 input_size = param['model_param']['input_size'] 
