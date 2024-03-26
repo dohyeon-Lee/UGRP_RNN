@@ -21,6 +21,7 @@ pip install scipy
   
 # How to use
 ## simulation & make dataset
+* you can change parameter setting in ```setting.yaml```
 * simulation is actuate at ```simulation/force_InvertedPendulum.py```
 
 #### option
@@ -48,19 +49,30 @@ for make train dataset,
 python force_InvertedPendulum.py --mode train --num 1 --timelength 100 --Hz 50 --animation False
 ```
 
-datasets are saved in ```train``` folder or '''test'''folder.
+datasets are saved in ```train``` folder or ```test``` folder.
 
 ## training
 * you can change parameter setting in ```setting.yaml```
-* ```train.py``` also tracing .pt file to use in libtorch (use in c++ environment in robot arm). Extracted traced model is saved in ```extracted_model``` folder.
+* ```train.py``` tracing .pt file to use in libtorch (use in c++ environment in robot arm). Extracted traced model is saved in ```extracted_model``` folder.
+* Extracted weight is saved in ```weight``` folder.
 * run ```train.py``` in terminal
-  
+
+#### option
+```--dataset``` : dataset file name
+
+#### example
 ```
-python train.py
+python train.py --dataset train/train_withcontrol3_Hz50.csv
 ```
 
 ## testing
+* you can change parameter setting in ```setting.yaml```
+  
+#### option
+```--dataset``` : dataset file name
+
+#### example
 ```
-python test.py
+python test.py --dataset test/test_controlData90%_50Hz_0.csv
 ```
 
