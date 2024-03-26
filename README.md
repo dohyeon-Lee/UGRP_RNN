@@ -22,7 +22,12 @@ pip install scipy
 # How to use
 ## simulation & make dataset
 * you can change parameter setting in ```setting.yaml```
-  * ds 
+  * you can change ```physics_param```, ```simulate_param``` in ```setting.yaml``` file.
+  *   ```physics_param``` 's parameters are about water-pendulum model's physics parameter such as mass, pendulum length, etc.
+  *   ```simulate_param```'s parameters are about simulation dataset structure.
+    * ```update_term``` : 
+    * ```non_control_percentage``` : 
+    * ```limit_acceleration``` : 
 * simulation is actuate at ```simulation/force_InvertedPendulum.py```
 
 #### option
