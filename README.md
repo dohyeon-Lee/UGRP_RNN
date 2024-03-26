@@ -24,8 +24,9 @@ pip install pyyaml
 
 ## training
 * you can change parameter setting in ```setting.yaml```
+* ```train.py``` also tracing pt file to use in libtorch (use in c++ environment in robot arm). Extracted traced model is saved in ```extracted_model``` folder.
 * run ```train.py``` in terminal
-
+  
 ```
 python train.py
 ```
@@ -35,9 +36,3 @@ python train.py
 python test.py
 ```
 
-## tracing
-* tracing pt file to use in libtorch (use in c++ environment in robot arm). run ```make_traced_model.py```. Extracted traced model is saved in ```extracted_model``` folder.
-
-```
-python make_traced_model.py
-```
